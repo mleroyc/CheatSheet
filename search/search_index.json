@@ -1,0 +1,1 @@
+{"config":{"lang":["fr"],"separator":"[\\s\\-]+","pipeline":["stopWordFilter"],"fields":{"title":{"boost":1000.0},"text":{"boost":1.0},"tags":{"boost":1000000.0}}},"docs":[{"location":"","title":"CheatSheet","text":"<p>Bienvenue sur votre aide-m\u00e9moire de cybers\u00e9curit\u00e9.</p>"},{"location":"bash/grep/","title":"Grep","text":""}]}
