@@ -1,0 +1,29 @@
+:root {
+  --md-default-fg-color--light: #333;
+}
+
+.md-typeset {
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset code {
+  border-radius: 4px;
+}
+
+.md-nav__link {
+  border-radius: 4px;
+}
+
+.md-typeset table:not([class]) {
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--md-default-fg-color--lightest);
+}

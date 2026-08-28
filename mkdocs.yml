@@ -1,0 +1,60 @@
+site_name: CheatSheet
+site_description: Aide-mémoire de cybersécurité
+site_author: Votre Nom
+
+theme:
+  name: material
+  language: fr
+  palette:
+    - scheme: default
+      primary: white
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Passer en mode sombre
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top          # bouton "back to top"
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy       # bouton copier le code
+    - content.code.annotate
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition               # !!! note, !!! warning, etc.
+  - pymdownx.details
+  - pymdownx.superfences     # blocs de code avancés
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.tasklist:       # checklists ☑
+      custom_checkbox: true
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search:
+      lang: fr
+  - minify:
+      minify_html: true
+
+nav:
+  - Accueil: index.md
+  - Bash:
+      - Grep: bash/grep.md
