@@ -56,5 +56,21 @@ plugins:
 
 nav:
   - Accueil: index.md
-  - Bash:
-      - Grep: bash/grep.md
+  - Bash & Linux:
+      - Traitement de texte & Regex:
+          - Grep: bash/grep.md
+          - Sed: bash/sed.md
+          - Awk: bash/awk.md
+          - Tr: bash/tr.md
+          - Manipulation de texte: bash/manipulation-texte.md
+      - Fichiers & Système:
+          - Find: bash/find.md
+          - Vim: bash/vim.md
+          - Fichiers et dossiers: bash/fichiers-et-dossiers.md
+          - Shell & Environnement: bash/shell-et-environnement.md
+      - Privilèges & Sécurité:
+          - Énumération d'identité: bash/enum-identite.md
+          - Chmod: bash/chmod.md
+          - Chown: bash/chown.md
+          - Su: bash/su.md
+          - Sudo: bash/sudo.md

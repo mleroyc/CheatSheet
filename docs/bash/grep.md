@@ -1,4 +1,4 @@
-# grep
+# grep — Recherche et filtrage de motifs dans du texte
 
 > `grep` (Global Regular Expression Print) est un outil en ligne de commande permettant de rechercher des motifs (littéraux ou via expressions régulières) dans un ou plusieurs fichiers, ligne par ligne.
 
