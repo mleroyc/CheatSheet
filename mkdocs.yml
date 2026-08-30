@@ -62,86 +62,86 @@ plugins:
 
 nav:
   - 🛠️ Fondamentaux CLI:
-      - Traitement de Texte:
-          - Grep: 1-fondamentaux-cli/grep.md
-          - Sed: 1-fondamentaux-cli/sed.md
-          - Awk: 1-fondamentaux-cli/awk.md
-          - Tr: 1-fondamentaux-cli/tr.md
-          - Manipulation de Texte: 1-fondamentaux-cli/manipulation-texte.md
-      - Système Linux:
-          - Fichiers et Dossiers: 1-fondamentaux-cli/fichiers-et-dossiers.md
-          - Shell & Environnement: 1-fondamentaux-cli/shell-et-environnement.md
-          - Paquets & Logs: 1-fondamentaux-cli/gestion-paquets-log.md
-          - Systemd & Services: 1-fondamentaux-cli/systemd-et-services.md
-          - Système, Disque & Boot: 1-fondamentaux-cli/systeme-disk-boot.md
-          - Find: 1-fondamentaux-cli/find.md
-          - Vim: 1-fondamentaux-cli/vim.md
-          - Bash Scripting: 1-fondamentaux-cli/bash-scripting.md
-      - Privilèges & Droits:
-          - Énumération d'Identité: 1-fondamentaux-cli/enum-identite.md
-          - Chmod: 1-fondamentaux-cli/chmod.md
-          - Chown: 1-fondamentaux-cli/chown.md
-          - Su: 1-fondamentaux-cli/su.md
-          - Sudo: 1-fondamentaux-cli/sudo.md
-      - Environnement Windows CLI:
-          - CMD Windows: 1-fondamentaux-cli/cmd-windows.md
-          - PowerShell Basics: 1-fondamentaux-cli/powershell-basics.md
+      - 🛠️ Outils & Commandes:
+          - Grep: 1-fondamentaux-cli/outils/grep.md
+          - Sed: 1-fondamentaux-cli/outils/sed.md
+          - Awk: 1-fondamentaux-cli/outils/awk.md
+          - Tr: 1-fondamentaux-cli/outils/tr.md
+          - Find: 1-fondamentaux-cli/outils/find.md
+          - Vim: 1-fondamentaux-cli/outils/vim.md
+          - Manipulation de Texte: 1-fondamentaux-cli/outils/manipulation-texte.md
+          - CMD Windows: 1-fondamentaux-cli/outils/cmd-windows.md
+          - PowerShell Basics: 1-fondamentaux-cli/outils/powershell-basics.md
+          - Chmod: 1-fondamentaux-cli/outils/chmod.md
+          - Chown: 1-fondamentaux-cli/outils/chown.md
+          - Su: 1-fondamentaux-cli/outils/su.md
+          - Sudo: 1-fondamentaux-cli/outils/sudo.md
+          - Énumération d'Identité: 1-fondamentaux-cli/outils/enum-identite.md
+      - 📚 Cours & Concepts:
+          - Fichiers et Dossiers: 1-fondamentaux-cli/cours/fichiers-et-dossiers.md
+          - Shell & Environnement: 1-fondamentaux-cli/cours/shell-et-environnement.md
+          - Paquets & Logs: 1-fondamentaux-cli/cours/gestion-paquets-log.md
+          - Systemd & Services: 1-fondamentaux-cli/cours/systemd-et-services.md
+          - Système, Disque & Boot: 1-fondamentaux-cli/cours/systeme-disk-boot.md
+          - Bash Scripting: 1-fondamentaux-cli/cours/bash-scripting.md
 
   - 🌐 Réseau & Recon:
-      - Configuration & Protocoles:
-          - Bases Réseau & Config: 2-reseau-et-recon/reseau-bases-config.md
-          - Routage & Subnetting: 2-reseau-et-recon/routage-subnetting.md
-          - Protocole DNS: 2-reseau-et-recon/dns-protocole.md
-          - Protocole FTP: 2-reseau-et-recon/ftp-protocole.md
-          - Partage de Fichiers (NFS/SMB): 2-reseau-et-recon/partage-et-fichiers.md
-      - Outils de Reconnaissance & Sniffing:
-          - Nmap: 2-reseau-et-recon/nmap.md
-          - Gobuster: 2-reseau-et-recon/gobuster.md
-          - Outils DNS (dig, nslookup, host): 2-reseau-et-recon/dns-outils.md
-          - Tcpdump: 2-reseau-et-recon/tcpdump.md
-          - Wireshark: 2-reseau-et-recon/wireshark.md
-          - ARP Spoofing & MitM: 2-reseau-et-recon/arp-spoofing-et-mitm.md
+      - 🛠️ Outils:
+          - Nmap: 2-reseau-et-recon/outils/nmap.md
+          - Gobuster: 2-reseau-et-recon/outils/gobuster.md
+          - Outils DNS: 2-reseau-et-recon/outils/dns-outils.md
+          - Tcpdump: 2-reseau-et-recon/outils/tcpdump.md
+          - Wireshark: 2-reseau-et-recon/outils/wireshark.md
+      - ⚔️ Attaques & Techniques:
+          - ARP Spoofing & MitM: 2-reseau-et-recon/attaques/arp-spoofing-et-mitm.md
+      - 📚 Cours & Protocoles:
+          - Bases Réseau & Config: 2-reseau-et-recon/cours/reseau-bases-config.md
+          - Routage & Subnetting: 2-reseau-et-recon/cours/routage-subnetting.md
+          - Protocole DNS: 2-reseau-et-recon/cours/dns-protocole.md
+          - Protocole FTP: 2-reseau-et-recon/cours/ftp-protocole.md
+          - Partage de Fichiers (NFS/SMB): 2-reseau-et-recon/cours/partage-et-fichiers.md
 
   - 🎯 Exploitation Web:
-      - Outils Web:
-          - Burp Suite: 3-web-exploitation/burp-suite.md
-          - SQLMap: 3-web-exploitation/sqlmap.md
-      - Vulnerabilités & Attaques:
-          - Injection SQL (SQLi): 3-web-exploitation/sqli.md
-          - Cross-Site Scripting (XSS): 3-web-exploitation/xss.md
-          - Inclusions de Fichiers (LFI / RFI): 3-web-exploitation/lfi-rfi.md
-          - Web Shells: 3-web-exploitation/web-shells.md
-          - Defailles d'Authentification: 3-web-exploitation/authentication-failures.md
-          - Broken Access Control: 3-web-exploitation/broken-access-control.md
-          - CVE-2024-21413 (Outlook Moniker Link): 3-web-exploitation/cve-2024-21413.md
+      - 🛠️ Outils:
+          - Burp Suite: 3-web-exploitation/outils/burp-suite.md
+          - SQLMap: 3-web-exploitation/outils/sqlmap.md
+      - ⚔️ Attaques & Vulnérabilités:
+          - Injection SQL (SQLi): 3-web-exploitation/attaques/sqli.md
+          - Cross-Site Scripting (XSS): 3-web-exploitation/attaques/xss.md
+          - Inclusions de Fichiers (LFI / RFI): 3-web-exploitation/attaques/lfi-rfi.md
+          - Web Shells: 3-web-exploitation/attaques/web-shells.md
+          - Défaillances d'Authentification: 3-web-exploitation/attaques/authentication-failures.md
+          - Broken Access Control: 3-web-exploitation/attaques/broken-access-control.md
+          - CVE-2024-21413 (Outlook Moniker Link): 3-web-exploitation/attaques/cve-2024-21413.md
 
   - ⚡ Post-Exploitation & Pivot:
-      - Shells & Écouteurs:
-          - Shell Listeners (Netcat, Socat, Rlwrap): 4-post-exploitation/shell-listeners.md
-          - Reverse & Bind Shells: 4-post-exploitation/reverse-bind-shells.md
-      - Frameworks & Payloads:
-          - Metasploit Framework: 4-post-exploitation/metasploit-framework.md
-          - Meterpreter: 4-post-exploitation/meterpreter.md
-          - Msfvenom: 4-post-exploitation/msfvenom.md
-      - Cracking & Brute-Force:
-          - Hydra: 4-post-exploitation/hydra.md
-          - John the Ripper: 4-post-exploitation/john-the-ripper.md
+      - 🛠️ Outils:
+          - Hydra: 4-post-exploitation/outils/hydra.md
+          - John the Ripper: 4-post-exploitation/outils/john-the-ripper.md
+          - Metasploit Framework: 4-post-exploitation/outils/metasploit-framework.md
+      - ⚔️ Attaques & Payloads:
+          - Shell Listeners: 4-post-exploitation/attaques/shell-listeners.md
+          - Reverse & Bind Shells: 4-post-exploitation/attaques/reverse-bind-shells.md
+          - Meterpreter: 4-post-exploitation/attaques/meterpreter.md
+          - Msfvenom: 4-post-exploitation/attaques/msfvenom.md
 
   - 🏰 Active Directory:
-      - Extraction de Credentials:
-          - Mimikatz / Kiwi: 5-active-directory/mimikatz-kiwi.md
+      - 🛠️ Outils:
+          - Mimikatz / Kiwi: 5-active-directory/outils/mimikatz-kiwi.md
 
   - 🛡️ Blue Team & Forensics:
-      - Réponse à Incident & Forensics:
-          - Digital Forensics Acquisition: 6-blue-team-forensics/digital-forensics-acquisition.md
-          - Windows Forensics: 6-blue-team-forensics/windows-forensics.md
-          - Journaux d'Événements Windows (CLI): 6-blue-team-forensics/windows-event-logs-cli.md
-      - Détection & SIEM:
-          - Log Fundamentals: 6-blue-team-forensics/log-fundamentals.md
-          - SIEM & Règles de Détection: 6-blue-team-forensics/siem-fundamentals-rules.md
+      - 🛠️ Outils:
+          - Journaux Windows CLI (wevtutil/Get-WinEvent): 6-blue-team-forensics/outils/windows-event-logs-cli.md
+      - 📚 Cours & Méthodes:
+          - Digital Forensics Acquisition: 6-blue-team-forensics/cours/digital-forensics-acquisition.md
+          - Windows Forensics: 6-blue-team-forensics/cours/windows-forensics.md
+          - Log Fundamentals: 6-blue-team-forensics/cours/log-fundamentals.md
+      - 🛡️ Défense & Détection:
+          - SIEM & Règles de Détection: 6-blue-team-forensics/defense/siem-fundamentals-rules.md
 
   - 📖 Méthodologies & Références:
-      - OWASP Top 10 Overview: 7-methodologies-ref/owasp-top10-cheatsheet.md
-      - Modèle IAAA: 7-methodologies-ref/iaaa-model.md
-      - SOC Fundamentals: 7-methodologies-ref/soc-fundamentals.md
-      - Incident Response Frameworks: 7-methodologies-ref/incident-response-frameworks.md
+      - 📚 Cours & Cadres:
+          - OWASP Top 10 Overview: 7-methodologies-ref/cours/owasp-top10-cheatsheet.md
+          - Modèle IAAA: 7-methodologies-ref/cours/iaaa-model.md
+          - SOC Fundamentals: 7-methodologies-ref/cours/soc-fundamentals.md
+          - Incident Response Frameworks: 7-methodologies-ref/cours/incident-response-frameworks.md
