@@ -1,5 +1,5 @@
 site_name: CheatSheet
-site_description: Aide-mémoire de cybersécurité
+site_description: Aide-mémoire de cybersécurité offensive & défensive
 site_author: Votre Nom
 
 theme:
@@ -12,17 +12,23 @@ theme:
       toggle:
         icon: material/weather-night
         name: Passer en mode sombre
+    - scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Passer en mode clair
   font:
     text: Roboto
     code: Roboto Mono
   features:
     - navigation.tabs
     - navigation.sections
-    - navigation.top          # bouton "back to top"
+    - navigation.top          # Bouton "back to top"
     - navigation.indexes
     - search.suggest
     - search.highlight
-    - content.code.copy       # bouton copier le code
+    - content.code.copy       # Bouton copier le code
     - content.code.annotate
 
 extra_css:
@@ -31,7 +37,7 @@ extra_css:
 markdown_extensions:
   - admonition               # !!! note, !!! warning, etc.
   - pymdownx.details
-  - pymdownx.superfences     # blocs de code avancés
+  - pymdownx.superfences     # Blocs de code avancés
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
@@ -41,7 +47,7 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
-  - pymdownx.tasklist:       # checklists ☑
+  - pymdownx.tasklist:       # Checklists ☑
       custom_checkbox: true
   - attr_list
   - pymdownx.emoji:
@@ -55,22 +61,87 @@ plugins:
       minify_html: true
 
 nav:
-  - Accueil: index.md
-  - Bash & Linux:
-      - Traitement de texte & Regex:
-          - Grep: bash/grep.md
-          - Sed: bash/sed.md
-          - Awk: bash/awk.md
-          - Tr: bash/tr.md
-          - Manipulation de texte: bash/manipulation-texte.md
-      - Fichiers & Système:
-          - Find: bash/find.md
-          - Vim: bash/vim.md
-          - Fichiers et dossiers: bash/fichiers-et-dossiers.md
-          - Shell & Environnement: bash/shell-et-environnement.md
-      - Privilèges & Sécurité:
-          - Énumération d'identité: bash/enum-identite.md
-          - Chmod: bash/chmod.md
-          - Chown: bash/chown.md
-          - Su: bash/su.md
-          - Sudo: bash/sudo.md
+  - 🛠️ Fondamentaux CLI:
+      - Traitement de Texte:
+          - Grep: 1-fondamentaux-cli/grep.md
+          - Sed: 1-fondamentaux-cli/sed.md
+          - Awk: 1-fondamentaux-cli/awk.md
+          - Tr: 1-fondamentaux-cli/tr.md
+          - Manipulation de Texte: 1-fondamentaux-cli/manipulation-texte.md
+      - Système Linux:
+          - Fichiers et Dossiers: 1-fondamentaux-cli/fichiers-et-dossiers.md
+          - Shell & Environnement: 1-fondamentaux-cli/shell-et-environnement.md
+          - Paquets & Logs: 1-fondamentaux-cli/gestion-paquets-log.md
+          - Systemd & Services: 1-fondamentaux-cli/systemd-et-services.md
+          - Système, Disque & Boot: 1-fondamentaux-cli/systeme-disk-boot.md
+          - Find: 1-fondamentaux-cli/find.md
+          - Vim: 1-fondamentaux-cli/vim.md
+          - Bash Scripting: 1-fondamentaux-cli/bash-scripting.md
+      - Privilèges & Droits:
+          - Énumération d'Identité: 1-fondamentaux-cli/enum-identite.md
+          - Chmod: 1-fondamentaux-cli/chmod.md
+          - Chown: 1-fondamentaux-cli/chown.md
+          - Su: 1-fondamentaux-cli/su.md
+          - Sudo: 1-fondamentaux-cli/sudo.md
+      - Environnement Windows CLI:
+          - CMD Windows: 1-fondamentaux-cli/cmd-windows.md
+          - PowerShell Basics: 1-fondamentaux-cli/powershell-basics.md
+
+  - 🌐 Réseau & Recon:
+      - Configuration & Protocoles:
+          - Bases Réseau & Config: 2-reseau-et-recon/reseau-bases-config.md
+          - Routage & Subnetting: 2-reseau-et-recon/routage-subnetting.md
+          - Protocole DNS: 2-reseau-et-recon/dns-protocole.md
+          - Protocole FTP: 2-reseau-et-recon/ftp-protocole.md
+          - Partage de Fichiers (NFS/SMB): 2-reseau-et-recon/partage-et-fichiers.md
+      - Outils de Reconnaissance & Sniffing:
+          - Nmap: 2-reseau-et-recon/nmap.md
+          - Gobuster: 2-reseau-et-recon/gobuster.md
+          - Outils DNS (dig, nslookup, host): 2-reseau-et-recon/dns-outils.md
+          - Tcpdump: 2-reseau-et-recon/tcpdump.md
+          - Wireshark: 2-reseau-et-recon/wireshark.md
+          - ARP Spoofing & MitM: 2-reseau-et-recon/arp-spoofing-et-mitm.md
+
+  - 🎯 Exploitation Web:
+      - Outils Web:
+          - Burp Suite: 3-web-exploitation/burp-suite.md
+          - SQLMap: 3-web-exploitation/sqlmap.md
+      - Vulnerabilités & Attaques:
+          - Injection SQL (SQLi): 3-web-exploitation/sqli.md
+          - Cross-Site Scripting (XSS): 3-web-exploitation/xss.md
+          - Inclusions de Fichiers (LFI / RFI): 3-web-exploitation/lfi-rfi.md
+          - Web Shells: 3-web-exploitation/web-shells.md
+          - Defailles d'Authentification: 3-web-exploitation/authentication-failures.md
+          - Broken Access Control: 3-web-exploitation/broken-access-control.md
+          - CVE-2024-21413 (Outlook Moniker Link): 3-web-exploitation/cve-2024-21413.md
+
+  - ⚡ Post-Exploitation & Pivot:
+      - Shells & Écouteurs:
+          - Shell Listeners (Netcat, Socat, Rlwrap): 4-post-exploitation/shell-listeners.md
+          - Reverse & Bind Shells: 4-post-exploitation/reverse-bind-shells.md
+      - Frameworks & Payloads:
+          - Metasploit Framework: 4-post-exploitation/metasploit-framework.md
+          - Meterpreter: 4-post-exploitation/meterpreter.md
+          - Msfvenom: 4-post-exploitation/msfvenom.md
+      - Cracking & Brute-Force:
+          - Hydra: 4-post-exploitation/hydra.md
+          - John the Ripper: 4-post-exploitation/john-the-ripper.md
+
+  - 🏰 Active Directory:
+      - Extraction de Credentials:
+          - Mimikatz / Kiwi: 5-active-directory/mimikatz-kiwi.md
+
+  - 🛡️ Blue Team & Forensics:
+      - Réponse à Incident & Forensics:
+          - Digital Forensics Acquisition: 6-blue-team-forensics/digital-forensics-acquisition.md
+          - Windows Forensics: 6-blue-team-forensics/windows-forensics.md
+          - Journaux d'Événements Windows (CLI): 6-blue-team-forensics/windows-event-logs-cli.md
+      - Détection & SIEM:
+          - Log Fundamentals: 6-blue-team-forensics/log-fundamentals.md
+          - SIEM & Règles de Détection: 6-blue-team-forensics/siem-fundamentals-rules.md
+
+  - 📖 Méthodologies & Références:
+      - OWASP Top 10 Overview: 7-methodologies-ref/owasp-top10-cheatsheet.md
+      - Modèle IAAA: 7-methodologies-ref/iaaa-model.md
+      - SOC Fundamentals: 7-methodologies-ref/soc-fundamentals.md
+      - Incident Response Frameworks: 7-methodologies-ref/incident-response-frameworks.md
