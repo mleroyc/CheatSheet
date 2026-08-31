@@ -61,38 +61,54 @@ plugins:
       minify_html: true
 
 nav:
-  - 🛠️ Fondamentaux CLI:
-      - 🛠️ Outils & Commandes:
-          - 📝 Traitement de Texte:
-              - Grep: 1-fondamentaux-cli/outils/grep.md
-              - Sed: 1-fondamentaux-cli/outils/sed.md
-              - Awk: 1-fondamentaux-cli/outils/awk.md
-              - Tr: 1-fondamentaux-cli/outils/tr.md
-              - Vim: 1-fondamentaux-cli/outils/vim.md
-              - Manipulation de Texte: 1-fondamentaux-cli/outils/manipulation-texte.md
-          - 🔍 Recherche & Système:
-              - Find: 1-fondamentaux-cli/outils/find.md
-          - 🔑 Droits & Identités:
-              - Chmod: 1-fondamentaux-cli/outils/chmod.md
-              - Chown: 1-fondamentaux-cli/outils/chown.md
-              - Su: 1-fondamentaux-cli/outils/su.md
-              - Sudo: 1-fondamentaux-cli/outils/sudo.md
-              - Énumération d'Identité: 1-fondamentaux-cli/outils/enum-identite.md
-          - ⚙️ Processus & Contrôle:
-              - ps: 1-fondamentaux-cli/outils/ps.md
-              - top & htop: 1-fondamentaux-cli/outils/top-htop.md
-              - pstree: 1-fondamentaux-cli/outils/pstree.md
-              - kill: 1-fondamentaux-cli/outils/kill.md
-              - killall & pkill: 1-fondamentaux-cli/outils/killall-pkill.md
-              - Job Control (&, fg, bg, jobs): 1-fondamentaux-cli/outils/job-control.md
-              - nohup & disown: 1-fondamentaux-cli/outils/nohup-disown.md
-          - 📊 Espace & Ressources:
-              - df: 1-fondamentaux-cli/outils/df.md
-              - du: 1-fondamentaux-cli/outils/du.md
-              - free: 1-fondamentaux-cli/outils/free.md
-          - 🪟 CLI Windows:
-              - CMD Windows: 1-fondamentaux-cli/outils/cmd-windows.md
-              - PowerShell Basics: 1-fondamentaux-cli/outils/powershell-basics.md
+- 🛠️ Fondamentaux CLI:
+    - 🛠️ Outils & Commandes:
+        - 📝 Édition & Traitement Avancé:
+            - Grep: 1-fondamentaux-cli/outils/grep.md
+            - Sed: 1-fondamentaux-cli/outils/sed.md
+            - Awk: 1-fondamentaux-cli/outils/awk.md
+            - Tr: 1-fondamentaux-cli/outils/tr.md
+            - Vim: 1-fondamentaux-cli/outils/vim.md
+        - 📄 Lecture & Inspection de Fichiers:
+            - Cat: 1-fondamentaux-cli/outils/cat.md
+            - Less: 1-fondamentaux-cli/outils/less.md
+            - Head: 1-fondamentaux-cli/outils/head.md
+            - Tail: 1-fondamentaux-cli/outils/tail.md
+            - Nl: 1-fondamentaux-cli/outils/nl.md
+        - ✂️ Manipulation & Transformation de Texte:
+            - Sort: 1-fondamentaux-cli/outils/sort.md
+            - Uniq: 1-fondamentaux-cli/outils/uniq.md
+            - Cut / Paste: 1-fondamentaux-cli/outils/paste.md
+            - Join: 1-fondamentaux-cli/outils/join.md
+            - Split: 1-fondamentaux-cli/outils/split.md
+            - Wc: 1-fondamentaux-cli/outils/wc.md
+            - Expand & Unexpand: 1-fondamentaux-cli/outils/expand-unexpand.md
+        - 🔍 Recherche & Système:
+            - Find: 1-fondamentaux-cli/outils/find.md
+        - 🔑 Droits & Identités:
+            - Chmod: 1-fondamentaux-cli/outils/chmod.md
+            - Chown: 1-fondamentaux-cli/outils/chown.md
+            - Su: 1-fondamentaux-cli/outils/su.md
+            - Sudo: 1-fondamentaux-cli/outils/sudo.md
+            - Whoami: 1-fondamentaux-cli/outils/whoami.md
+            - Who: 1-fondamentaux-cli/outils/who.md
+            - Id: 1-fondamentaux-cli/outils/id.md
+            - Groups: 1-fondamentaux-cli/outils/groups.md
+        - ⚙️ Processus & Contrôle:
+            - ps: 1-fondamentaux-cli/outils/ps.md
+            - top & htop: 1-fondamentaux-cli/outils/top-htop.md
+            - pstree: 1-fondamentaux-cli/outils/pstree.md
+            - kill: 1-fondamentaux-cli/outils/kill.md
+            - killall & pkill: 1-fondamentaux-cli/outils/killall-pkill.md
+            - Job Control (&, fg, bg, jobs): 1-fondamentaux-cli/outils/job-control.md
+            - nohup & disown: 1-fondamentaux-cli/outils/nohup-disown.md
+        - 📊 Espace & Ressources:
+            - df: 1-fondamentaux-cli/outils/df.md
+            - du: 1-fondamentaux-cli/outils/du.md
+            - free: 1-fondamentaux-cli/outils/free.md
+        - 🪟 CLI Windows:
+            - CMD Windows: 1-fondamentaux-cli/outils/cmd-windows.md
+            - PowerShell Basics: 1-fondamentaux-cli/outils/powershell-basics.md
       - 📚 Cours & Concepts:
           - Fichiers et Dossiers: 1-fondamentaux-cli/cours/fichiers-et-dossiers.md
           - Shell & Environnement: 1-fondamentaux-cli/cours/shell-et-environnement.md
@@ -102,26 +118,27 @@ nav:
           - Bash Scripting: 1-fondamentaux-cli/cours/bash-scripting.md
 
   - 🌐 Réseau & Recon:
-      - 🛠️ Outils & Diagnostic:
-          - 🔌 Inspection Locale & Sockets:
-              - ip (interfaces & routes): 2-reseau-et-recon/outils/ip.md
-              - ss (sockets & ports): 2-reseau-et-recon/outils/ss.md
-              - lsof (fichiers & réseau): 2-reseau-et-recon/outils/lsof.md
-          - 🔍 Diagnostic & Résolution:
-              - ping: 2-reseau-et-recon/outils/ping.md
-              - traceroute & mtr: 2-reseau-et-recon/outils/traceroute-mtr.md
-              - dig & nslookup: 2-reseau-et-recon/outils/dig-nslookup.md
-              - Outils DNS: 2-reseau-et-recon/outils/dns-outils.md
-          - 🌐 Web & Transfert de Données:
-              - curl: 2-reseau-et-recon/outils/curl.md
-              - wget: 2-reseau-et-recon/outils/wget.md
-              - Netcat (nc): 2-reseau-et-recon/outils/netcat.md
-          - 🕵️ Reconnaissance & Énumération:
-              - Nmap: 2-reseau-et-recon/outils/nmap.md
-              - Gobuster: 2-reseau-et-recon/outils/gobuster.md
-          - 🦈 Capture & Analyse de Trafic:
-              - Tcpdump: 2-reseau-et-recon/outils/tcpdump.md
-              - Wireshark: 2-reseau-et-recon/outils/wireshark.md
+    - 🛠️ Outils & Diagnostic:
+        - 🔌 Inspection Locale & Sockets:
+            - ip (interfaces & routes): 2-reseau-et-recon/outils/ip.md
+            - ss (sockets & ports): 2-reseau-et-recon/outils/ss.md
+            - lsof (fichiers & réseau): 2-reseau-et-recon/outils/lsof.md
+        - 🔍 Diagnostic & Résolution DNS:
+            - ping: 2-reseau-et-recon/outils/ping.md
+            - traceroute & mtr: 2-reseau-et-recon/outils/traceroute-mtr.md
+            - dig: 2-reseau-et-recon/outils/dig.md
+            - nslookup: 2-reseau-et-recon/outils/nslookup.md
+            - host: 2-reseau-et-recon/outils/host.md
+        - 🌐 Web & Transfert de Données:
+            - curl: 2-reseau-et-recon/outils/curl.md
+            - wget: 2-reseau-et-recon/outils/wget.md
+            - Netcat (nc): 2-reseau-et-recon/outils/netcat.md
+        - 🕵️ Reconnaissance & Énumération:
+            - Nmap: 2-reseau-et-recon/outils/nmap.md
+            - Gobuster: 2-reseau-et-recon/outils/gobuster.md
+        - 🦈 Capture & Analyse de Trafic:
+            - Tcpdump: 2-reseau-et-recon/outils/tcpdump.md
+            - Wireshark: 2-reseau-et-recon/outils/wireshark.md
       - ⚔️ Attaques & Techniques:
           - ARP Spoofing & MitM: 2-reseau-et-recon/attaques/arp-spoofing-et-mitm.md
       - 📚 Cours & Protocoles:
