@@ -139,9 +139,9 @@ nav:
         - 🦈 Capture & Analyse de Trafic:
             - Tcpdump: 2-reseau-et-recon/outils/tcpdump.md
             - Wireshark: 2-reseau-et-recon/outils/wireshark.md
-      - ⚔️ Attaques & Techniques:
+    - ⚔️ Attaques & Techniques:
           - ARP Spoofing & MitM: 2-reseau-et-recon/attaques/arp-spoofing-et-mitm.md
-      - 📚 Cours & Protocoles:
+    - 📚 Cours & Protocoles:
           - Bases Réseau & Config: 2-reseau-et-recon/cours/reseau-bases-config.md
           - Routage & Subnetting: 2-reseau-et-recon/cours/routage-subnetting.md
           - Protocole DNS: 2-reseau-et-recon/cours/dns-protocole.md
