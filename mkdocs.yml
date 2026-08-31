@@ -106,6 +106,16 @@ nav:
               - df: 1-fondamentaux-cli/outils/df.md
               - du: 1-fondamentaux-cli/outils/du.md
               - free: 1-fondamentaux-cli/outils/free.md
+          - Archiving & Compression:
+              - tar: 1-fondamentaux-cli/outils/tar.md
+              - zip / unzip: 1-fondamentaux-cli/outils/zip-unzip.md
+              - gzip / gunzip: 1-fondamentaux-cli/outils/gzip-gunzip.md
+          - Shell & Productivité:
+              - Historique & Raccourcis: 1-fondamentaux-cli/outils/history.md
+              - Alias Shell: 1-fondamentaux-cli/outils/alias.md
+              - Variables d'Environnement: 1-fondamentaux-cli/outils/variables-environnement.md
+              - Substitutions & Expansions: 1-fondamentaux-cli/outils/substitutions-expansions.md
+              - One-Liners & Boucles: 1-fondamentaux-cli/outils/one-liners-boucles.md
           - CLI Windows:
               - CMD Windows: 1-fondamentaux-cli/outils/cmd-windows.md
               - PowerShell Basics: 1-fondamentaux-cli/outils/powershell-basics.md
@@ -139,6 +149,11 @@ nav:
         - Capture & Analyse de Trafic:
             - Tcpdump: 2-reseau-et-recon/outils/tcpdump.md
             - Wireshark: 2-reseau-et-recon/outils/wireshark.md
+        - Accès Distant & Transferts:
+              - SSH: 2-reseau-et-recon/outils/ssh.md
+              - Clés SSH & Auth: 2-reseau-et-recon/outils/cles-ssh.md
+              - SCP: 2-reseau-et-recon/outils/scp.md
+              - Rsync: 2-reseau-et-recon/outils/rsync.md
     - ⚔️ Attaques & Techniques:
           - ARP Spoofing & MitM: 2-reseau-et-recon/attaques/arp-spoofing-et-mitm.md
     - 📚 Cours & Protocoles:
