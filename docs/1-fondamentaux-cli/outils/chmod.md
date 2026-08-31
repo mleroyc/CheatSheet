@@ -44,16 +44,22 @@ chmod -R 644 /var/www/html
 ```bash
 # SUID : le fichier s'exécute avec les privilèges de son propriétaire (souvent root)
 chmod 4755 /usr/bin/binaire
+chmod u+s /usr/bin/binaire
+# Visible dans ls -l : -rwsr-xr-x (s = SUID + x actif | S = SUID sans x)
 ```
 
 ```bash
 # SGID sur un dossier : tout fichier créé dedans hérite du groupe du dossier parent
 chmod 2775 /partage/commun
+chmod g+s /partage/commun
+# Visible dans ls -l : drwxrwsr-x (s = SGID + x actif | S = SGID sans x)
 ```
 
 ```bash
 # Sticky bit : dans un dossier partagé, seul le propriétaire du fichier peut le supprimer
 chmod 1777 /tmp
+chmod +t /tmp
+# Visible dans ls -l : drwxrwxrwt (t = Sticky + x actif | T = Sticky sans x)
 ```
 
 ## 3. Synthèse des Flags & Options (Tableau)
