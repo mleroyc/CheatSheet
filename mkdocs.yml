@@ -61,21 +61,21 @@ plugins:
       minify_html: true
 
 nav:
-  - 🛠️ Fondamentaux CLI:
+  - Fondamentaux CLI:
       - 🛠️ Outils & Commandes:
-          - 📝 Édition & Traitement Avancé:
+          - Édition & Traitement Avancé:
               - Grep: 1-fondamentaux-cli/outils/grep.md
               - Sed: 1-fondamentaux-cli/outils/sed.md
               - Awk: 1-fondamentaux-cli/outils/awk.md
               - Tr: 1-fondamentaux-cli/outils/tr.md
               - Vim: 1-fondamentaux-cli/outils/vim.md
-          - 📄 Lecture & Inspection de Fichiers:
+          - Lecture & Inspection de Fichiers:
               - Cat: 1-fondamentaux-cli/outils/cat.md
               - Less: 1-fondamentaux-cli/outils/less.md
               - Head: 1-fondamentaux-cli/outils/head.md
               - Tail: 1-fondamentaux-cli/outils/tail.md
               - Nl: 1-fondamentaux-cli/outils/nl.md
-          - ✂️ Manipulation & Transformation de Texte:
+          - Manipulation & Transformation de Texte:
               - Sort: 1-fondamentaux-cli/outils/sort.md
               - Uniq: 1-fondamentaux-cli/outils/uniq.md
               - Cut / Paste: 1-fondamentaux-cli/outils/paste.md
@@ -83,9 +83,9 @@ nav:
               - Split: 1-fondamentaux-cli/outils/split.md
               - Wc: 1-fondamentaux-cli/outils/wc.md
               - Expand & Unexpand: 1-fondamentaux-cli/outils/expand-unexpand.md
-          - 🔍 Recherche & Système:
+          - Recherche & Système:
               - Find: 1-fondamentaux-cli/outils/find.md
-          - 🔑 Droits & Identités:
+          - Droits & Identités:
               - Chmod: 1-fondamentaux-cli/outils/chmod.md
               - Chown: 1-fondamentaux-cli/outils/chown.md
               - Su: 1-fondamentaux-cli/outils/su.md
@@ -94,7 +94,7 @@ nav:
               - Who: 1-fondamentaux-cli/outils/who.md
               - Id: 1-fondamentaux-cli/outils/id.md
               - Groups: 1-fondamentaux-cli/outils/groups.md
-          - ⚙️ Processus & Contrôle:
+          - Processus & Contrôle:
               - ps: 1-fondamentaux-cli/outils/ps.md
               - top & htop: 1-fondamentaux-cli/outils/top-htop.md
               - pstree: 1-fondamentaux-cli/outils/pstree.md
@@ -102,11 +102,11 @@ nav:
               - killall & pkill: 1-fondamentaux-cli/outils/killall-pkill.md
               - Job Control (&, fg, bg, jobs): 1-fondamentaux-cli/outils/job-control.md
               - nohup & disown: 1-fondamentaux-cli/outils/nohup-disown.md
-          - 📊 Espace & Ressources:
+          - Espace & Ressources:
               - df: 1-fondamentaux-cli/outils/df.md
               - du: 1-fondamentaux-cli/outils/du.md
               - free: 1-fondamentaux-cli/outils/free.md
-          - 🪟 CLI Windows:
+          - CLI Windows:
               - CMD Windows: 1-fondamentaux-cli/outils/cmd-windows.md
               - PowerShell Basics: 1-fondamentaux-cli/outils/powershell-basics.md
       - 📚 Cours & Concepts:
@@ -117,26 +117,26 @@ nav:
           - Système, Disque & Boot: 1-fondamentaux-cli/cours/systeme-disk-boot.md
           - Bash Scripting: 1-fondamentaux-cli/cours/bash-scripting.md
 
-  - 🌐 Réseau & Recon:
+  - Réseau & Recon:
     - 🛠️ Outils & Diagnostic:
-        - 🔌 Inspection Locale & Sockets:
+        - Inspection Locale & Sockets:
             - ip (interfaces & routes): 2-reseau-et-recon/outils/ip.md
             - ss (sockets & ports): 2-reseau-et-recon/outils/ss.md
             - lsof (fichiers & réseau): 2-reseau-et-recon/outils/lsof.md
-        - 🔍 Diagnostic & Résolution DNS:
+        - Diagnostic & Résolution DNS:
             - ping: 2-reseau-et-recon/outils/ping.md
             - traceroute & mtr: 2-reseau-et-recon/outils/traceroute-mtr.md
             - dig: 2-reseau-et-recon/outils/dig.md
             - nslookup: 2-reseau-et-recon/outils/nslookup.md
             - host: 2-reseau-et-recon/outils/host.md
-        - 🌐 Web & Transfert de Données:
+        - Web & Transfert de Données:
             - curl: 2-reseau-et-recon/outils/curl.md
             - wget: 2-reseau-et-recon/outils/wget.md
             - Netcat (nc): 2-reseau-et-recon/outils/netcat.md
-        - 🕵️ Reconnaissance & Énumération:
+        - Reconnaissance & Énumération:
             - Nmap: 2-reseau-et-recon/outils/nmap.md
             - Gobuster: 2-reseau-et-recon/outils/gobuster.md
-        - 🦈 Capture & Analyse de Trafic:
+        - Capture & Analyse de Trafic:
             - Tcpdump: 2-reseau-et-recon/outils/tcpdump.md
             - Wireshark: 2-reseau-et-recon/outils/wireshark.md
     - ⚔️ Attaques & Techniques:
@@ -148,7 +148,7 @@ nav:
           - Protocole FTP: 2-reseau-et-recon/cours/ftp-protocole.md
           - Partage de Fichiers (NFS/SMB): 2-reseau-et-recon/cours/partage-et-fichiers.md
 
-  - 🎯 Exploitation Web:
+  - Exploitation Web:
       - 🛠️ Outils:
           - Burp Suite: 3-web-exploitation/outils/burp-suite.md
           - SQLMap: 3-web-exploitation/outils/sqlmap.md
@@ -161,7 +161,7 @@ nav:
           - Broken Access Control: 3-web-exploitation/attaques/broken-access-control.md
           - CVE-2024-21413 (Outlook Moniker Link): 3-web-exploitation/attaques/cve-2024-21413.md
 
-  - ⚡ Post-Exploitation & Pivot:
+  - Post-Exploitation & Pivot:
       - 🛠️ Outils:
           - Hydra: 4-post-exploitation/outils/hydra.md
           - John the Ripper: 4-post-exploitation/outils/john-the-ripper.md
@@ -172,11 +172,11 @@ nav:
           - Meterpreter: 4-post-exploitation/attaques/meterpreter.md
           - Msfvenom: 4-post-exploitation/attaques/msfvenom.md
 
-  - 🏰 Active Directory:
+  - Active Directory:
       - 🛠️ Outils:
           - Mimikatz / Kiwi: 5-active-directory/outils/mimikatz-kiwi.md
 
-  - 🛡️ Blue Team & Forensics:
+  - Blue Team & Forensics:
       - 🛠️ Outils:
           - Journaux Windows CLI (wevtutil/Get-WinEvent): 6-blue-team-forensics/outils/windows-event-logs-cli.md
       - 📚 Cours & Méthodes:
@@ -186,7 +186,7 @@ nav:
       - 🛡️ Défense & Détection:
           - SIEM & Règles de Détection: 6-blue-team-forensics/defense/siem-fundamentals-rules.md
 
-  - 📖 Méthodologies & Références:
+  - Méthodologies & Références:
       - 📚 Cours & Cadres:
           - OWASP Top 10 Overview: 7-methodologies-ref/cours/owasp-top10-cheatsheet.md
           - Modèle IAAA: 7-methodologies-ref/cours/iaaa-model.md
