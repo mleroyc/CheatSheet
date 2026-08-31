@@ -61,54 +61,54 @@ plugins:
       minify_html: true
 
 nav:
-- 🛠️ Fondamentaux CLI:
-    - 🛠️ Outils & Commandes:
-        - 📝 Édition & Traitement Avancé:
-            - Grep: 1-fondamentaux-cli/outils/grep.md
-            - Sed: 1-fondamentaux-cli/outils/sed.md
-            - Awk: 1-fondamentaux-cli/outils/awk.md
-            - Tr: 1-fondamentaux-cli/outils/tr.md
-            - Vim: 1-fondamentaux-cli/outils/vim.md
-        - 📄 Lecture & Inspection de Fichiers:
-            - Cat: 1-fondamentaux-cli/outils/cat.md
-            - Less: 1-fondamentaux-cli/outils/less.md
-            - Head: 1-fondamentaux-cli/outils/head.md
-            - Tail: 1-fondamentaux-cli/outils/tail.md
-            - Nl: 1-fondamentaux-cli/outils/nl.md
-        - ✂️ Manipulation & Transformation de Texte:
-            - Sort: 1-fondamentaux-cli/outils/sort.md
-            - Uniq: 1-fondamentaux-cli/outils/uniq.md
-            - Cut / Paste: 1-fondamentaux-cli/outils/paste.md
-            - Join: 1-fondamentaux-cli/outils/join.md
-            - Split: 1-fondamentaux-cli/outils/split.md
-            - Wc: 1-fondamentaux-cli/outils/wc.md
-            - Expand & Unexpand: 1-fondamentaux-cli/outils/expand-unexpand.md
-        - 🔍 Recherche & Système:
-            - Find: 1-fondamentaux-cli/outils/find.md
-        - 🔑 Droits & Identités:
-            - Chmod: 1-fondamentaux-cli/outils/chmod.md
-            - Chown: 1-fondamentaux-cli/outils/chown.md
-            - Su: 1-fondamentaux-cli/outils/su.md
-            - Sudo: 1-fondamentaux-cli/outils/sudo.md
-            - Whoami: 1-fondamentaux-cli/outils/whoami.md
-            - Who: 1-fondamentaux-cli/outils/who.md
-            - Id: 1-fondamentaux-cli/outils/id.md
-            - Groups: 1-fondamentaux-cli/outils/groups.md
-        - ⚙️ Processus & Contrôle:
-            - ps: 1-fondamentaux-cli/outils/ps.md
-            - top & htop: 1-fondamentaux-cli/outils/top-htop.md
-            - pstree: 1-fondamentaux-cli/outils/pstree.md
-            - kill: 1-fondamentaux-cli/outils/kill.md
-            - killall & pkill: 1-fondamentaux-cli/outils/killall-pkill.md
-            - Job Control (&, fg, bg, jobs): 1-fondamentaux-cli/outils/job-control.md
-            - nohup & disown: 1-fondamentaux-cli/outils/nohup-disown.md
-        - 📊 Espace & Ressources:
-            - df: 1-fondamentaux-cli/outils/df.md
-            - du: 1-fondamentaux-cli/outils/du.md
-            - free: 1-fondamentaux-cli/outils/free.md
-        - 🪟 CLI Windows:
-            - CMD Windows: 1-fondamentaux-cli/outils/cmd-windows.md
-            - PowerShell Basics: 1-fondamentaux-cli/outils/powershell-basics.md
+  - 🛠️ Fondamentaux CLI:
+      - 🛠️ Outils & Commandes:
+          - 📝 Édition & Traitement Avancé:
+              - Grep: 1-fondamentaux-cli/outils/grep.md
+              - Sed: 1-fondamentaux-cli/outils/sed.md
+              - Awk: 1-fondamentaux-cli/outils/awk.md
+              - Tr: 1-fondamentaux-cli/outils/tr.md
+              - Vim: 1-fondamentaux-cli/outils/vim.md
+          - 📄 Lecture & Inspection de Fichiers:
+              - Cat: 1-fondamentaux-cli/outils/cat.md
+              - Less: 1-fondamentaux-cli/outils/less.md
+              - Head: 1-fondamentaux-cli/outils/head.md
+              - Tail: 1-fondamentaux-cli/outils/tail.md
+              - Nl: 1-fondamentaux-cli/outils/nl.md
+          - ✂️ Manipulation & Transformation de Texte:
+              - Sort: 1-fondamentaux-cli/outils/sort.md
+              - Uniq: 1-fondamentaux-cli/outils/uniq.md
+              - Cut / Paste: 1-fondamentaux-cli/outils/paste.md
+              - Join: 1-fondamentaux-cli/outils/join.md
+              - Split: 1-fondamentaux-cli/outils/split.md
+              - Wc: 1-fondamentaux-cli/outils/wc.md
+              - Expand & Unexpand: 1-fondamentaux-cli/outils/expand-unexpand.md
+          - 🔍 Recherche & Système:
+              - Find: 1-fondamentaux-cli/outils/find.md
+          - 🔑 Droits & Identités:
+              - Chmod: 1-fondamentaux-cli/outils/chmod.md
+              - Chown: 1-fondamentaux-cli/outils/chown.md
+              - Su: 1-fondamentaux-cli/outils/su.md
+              - Sudo: 1-fondamentaux-cli/outils/sudo.md
+              - Whoami: 1-fondamentaux-cli/outils/whoami.md
+              - Who: 1-fondamentaux-cli/outils/who.md
+              - Id: 1-fondamentaux-cli/outils/id.md
+              - Groups: 1-fondamentaux-cli/outils/groups.md
+          - ⚙️ Processus & Contrôle:
+              - ps: 1-fondamentaux-cli/outils/ps.md
+              - top & htop: 1-fondamentaux-cli/outils/top-htop.md
+              - pstree: 1-fondamentaux-cli/outils/pstree.md
+              - kill: 1-fondamentaux-cli/outils/kill.md
+              - killall & pkill: 1-fondamentaux-cli/outils/killall-pkill.md
+              - Job Control (&, fg, bg, jobs): 1-fondamentaux-cli/outils/job-control.md
+              - nohup & disown: 1-fondamentaux-cli/outils/nohup-disown.md
+          - 📊 Espace & Ressources:
+              - df: 1-fondamentaux-cli/outils/df.md
+              - du: 1-fondamentaux-cli/outils/du.md
+              - free: 1-fondamentaux-cli/outils/free.md
+          - 🪟 CLI Windows:
+              - CMD Windows: 1-fondamentaux-cli/outils/cmd-windows.md
+              - PowerShell Basics: 1-fondamentaux-cli/outils/powershell-basics.md
       - 📚 Cours & Concepts:
           - Fichiers et Dossiers: 1-fondamentaux-cli/cours/fichiers-et-dossiers.md
           - Shell & Environnement: 1-fondamentaux-cli/cours/shell-et-environnement.md
