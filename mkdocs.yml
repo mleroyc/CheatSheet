@@ -216,3 +216,13 @@ nav:
           - Index Root-Me: 04-writeups/rootme/index.md
       - OverTheWire (OTW):
           - Index OTW: 04-writeups/otw/index.md
+
+  - 📖 05 - Cours:
+      - Linux :
+          - Index Linux: 05-cours/Linux/index.html
+      - Windows :
+          - Index Windows: 05-cours/Windows/index.html
+      - Réseaux :
+          - Index Réseaux: 05-cours/Réseaux/index.html
+      - Web :
+          - Index Web: 05-cours/Web/index.html
