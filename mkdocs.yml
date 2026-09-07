@@ -26,10 +26,12 @@ theme:
     - navigation.sections
     - navigation.top          # Bouton "back to top"
     - navigation.indexes
+    - navigation.tracking
     - search.suggest
     - search.highlight
     - content.code.copy       # Bouton copier le code
     - content.code.annotate
+    - content.tabs.link
 
 extra_css:
   - stylesheets/extra.css
@@ -37,9 +39,11 @@ extra_css:
 markdown_extensions:
   - admonition               # !!! note, !!! warning, etc.
   - pymdownx.details
-  - pymdownx.superfences     # Blocs de code avancés
+  - pymdownx.superfences     # Blocs de code avancés (imbrication, mermaid...)
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.tabbed:
@@ -47,9 +51,10 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
-  - pymdownx.tasklist:       # Checklists ☑
+  - pymdownx.tasklist:       # Checklists
       custom_checkbox: true
   - attr_list
+  - md_in_html
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
@@ -57,160 +62,152 @@ markdown_extensions:
 plugins:
   - search:
       lang: fr
+  - tags:
+      tags_file: tags.md
   - minify:
       minify_html: true
 
 nav:
-  - 🛠️ Outils & Commandes:
-      - Édition & Traitement de Texte:
-          - Grep: outils/cli/grep.md
-          - Sed: outils/cli/sed.md
-          - Awk: outils/cli/awk.md
-          - Tr: outils/cli/tr.md
-          - Vim: outils/cli/vim.md
-      - Lecture & Inspection de Fichiers:
-          - Cat: outils/cli/cat.md
-          - Less: outils/cli/less.md
-          - Head: outils/cli/head.md
-          - Tail: outils/cli/tail.md
-          - Nl: outils/cli/nl.md
-          - Diff (Comparaison): outils/cli/diff.md
-      - Manipulation & Transformation de Texte:
-          - Sort: outils/cli/sort.md
-          - Uniq: outils/cli/uniq.md
-          - Cut: outils/cli/cut.md
-          - Cut / Paste: outils/cli/paste.md
-          - Join: outils/cli/join.md
-          - Split: outils/cli/split.md
-          - Wc: outils/cli/wc.md
-          - Expand & Unexpand: outils/cli/expand-unexpand.md
-          - Seq (Génération de séries): outils/cli/seq.md
-      - Encodage & Binaire:
-          - Base64: outils/cli/base64.md
-          - Xxd (Hexdump & Patching): outils/cli/xxd.md
-      - Recherche & Fichiers Système:
-          - Find: outils/cli/find.md
-      - Permissions, Droits & Identités:
-          - Chmod: outils/cli/chmod.md
-          - Chown: outils/cli/chown.md
-          - Umask: outils/cli/umask.md
-          - Su: outils/cli/su.md
-          - Sudo: outils/cli/sudo.md
-          - Whoami: outils/cli/whoami.md
-          - Who: outils/cli/who.md
-          - Id: outils/cli/id.md
-          - Groups: outils/cli/groups.md
-      - Processus & Contrôle:
-          - ps: outils/cli/ps.md
-          - top & htop: outils/cli/top-htop.md
-          - pstree: outils/cli/pstree.md
-          - kill: outils/cli/kill.md
-          - killall & pkill: outils/cli/killall-pkill.md
-          - Job Control (&, fg, bg, jobs): outils/cli/job-control.md
-          - nohup & disown: outils/cli/nohup-disown.md
-      - Tâches Planifiées & Automatisation:
-          - Crontab: outils/cli/crontab.md
-      - Espace & Ressources:
-          - df: outils/cli/df.md
-          - du: outils/cli/du.md
-          - free: outils/cli/free.md
-      - Archivage & Compression:
-          - tar: outils/cli/tar.md
-          - zip / unzip: outils/cli/zip-unzip.md
-          - gzip / gunzip: outils/cli/gzip-gunzip.md
-          - bzip2: outils/cli/bzip2.md
-      - Shell, Productivité & Divers CLI:
-          - Historique & Raccourcis: outils/cli/history.md
-          - Alias Shell: outils/cli/alias.md
-          - Variables d'Environnement: outils/cli/variables-environnement.md
-          - Substitutions & Expansions: outils/cli/substitutions-expansions.md
-          - One-Liners & Boucles: outils/cli/one-liners-boucles.md
-          - CMD Windows: outils/cli/cmd-windows.md
-          - PowerShell Basics: outils/cli/powershell-basics.md
-          - Date: outils/cli/date.md
-          - Tee: outils/cli/tee.md
-      - Diagnostic Réseau, Inspection & Capture:
-          - ip (interfaces & routes): outils/reseau/ip.md
-          - ss (sockets & ports): outils/reseau/ss.md
-          - lsof (fichiers & réseau): outils/reseau/lsof.md
-          - ping: outils/reseau/ping.md
-          - traceroute & mtr: outils/reseau/traceroute-mtr.md
-          - dig: outils/reseau/dig.md
-          - nslookup: outils/reseau/nslookup.md
-          - host: outils/reseau/host.md
-          - Tcpdump: outils/reseau/tcpdump.md
-          - Wireshark: outils/reseau/wireshark.md
-      - Web, Transfert & Accès Distant:
-          - curl: outils/reseau/curl.md
-          - wget: outils/reseau/wget.md
-          - Netcat (nc): outils/reseau/netcat.md
-          - OpenSSL: outils/reseau/openssl.md
-          - SSH: outils/reseau/ssh.md
-          - Clés SSH & Auth: outils/reseau/cles-ssh.md
-          - SCP: outils/reseau/scp.md
-          - Rsync: outils/reseau/rsync.md
-      - Reconnaissance, Exploitation & Cracking:
-          - Nmap: outils/web-post-ad/nmap.md
-          - Gobuster: outils/web-post-ad/gobuster.md
-          - Burp Suite: outils/web-post-ad/burp-suite.md
-          - SQLMap: outils/web-post-ad/sqlmap.md
-          - Hydra: outils/web-post-ad/hydra.md
-          - John the Ripper: outils/web-post-ad/john-the-ripper.md
-          - Metasploit Framework: outils/web-post-ad/metasploit-framework.md
-          - Mimikatz / Kiwi: outils/web-post-ad/mimikatz-kiwi.md
-      - Forensics & Journaux:
-          - Journaux Windows CLI (wevtutil/Get-WinEvent): outils/forensics/windows-event-logs-cli.md
+  - 🧱 01 - Fondamentaux:
+      - CLI de Base & Manipulation de Texte:
+          - Grep: 01-fundamentals/cli-base/grep.md
+          - Sed: 01-fundamentals/cli-base/sed.md
+          - Awk: 01-fundamentals/cli-base/awk.md
+          - Tr: 01-fundamentals/cli-base/tr.md
+          - Vim: 01-fundamentals/cli-base/vim.md
+          - Cat: 01-fundamentals/cli-base/cat.md
+          - Less: 01-fundamentals/cli-base/less.md
+          - Head: 01-fundamentals/cli-base/head.md
+          - Tail: 01-fundamentals/cli-base/tail.md
+          - Nl: 01-fundamentals/cli-base/nl.md
+          - Diff (Comparaison): 01-fundamentals/cli-base/diff.md
+          - Sort: 01-fundamentals/cli-base/sort.md
+          - Uniq: 01-fundamentals/cli-base/uniq.md
+          - Cut: 01-fundamentals/cli-base/cut.md
+          - Cut / Paste: 01-fundamentals/cli-base/paste.md
+          - Join: 01-fundamentals/cli-base/join.md
+          - Split: 01-fundamentals/cli-base/split.md
+          - Wc: 01-fundamentals/cli-base/wc.md
+          - Expand & Unexpand: 01-fundamentals/cli-base/expand-unexpand.md
+          - Seq (Génération de séries): 01-fundamentals/cli-base/seq.md
+          - Base64: 01-fundamentals/cli-base/base64.md
+          - Xxd (Hexdump & Patching): 01-fundamentals/cli-base/xxd.md
+          - Find: 01-fundamentals/cli-base/find.md
+          - Tee: 01-fundamentals/cli-base/tee.md
+          - Date: 01-fundamentals/cli-base/date.md
+          - Historique & Raccourcis: 01-fundamentals/cli-base/history.md
+          - Alias Shell: 01-fundamentals/cli-base/alias.md
+          - Variables d'Environnement: 01-fundamentals/cli-base/variables-environnement.md
+          - Substitutions & Expansions: 01-fundamentals/cli-base/substitutions-expansions.md
+          - One-Liners & Boucles: 01-fundamentals/cli-base/one-liners-boucles.md
+          - CMD Windows: 01-fundamentals/cli-base/cmd-windows.md
+          - PowerShell Basics: 01-fundamentals/cli-base/powershell-basics.md
+      - Permissions, Identités & Processus:
+          - Chmod: 01-fundamentals/permissions-processus/chmod.md
+          - Chown: 01-fundamentals/permissions-processus/chown.md
+          - Umask: 01-fundamentals/permissions-processus/umask.md
+          - Su: 01-fundamentals/permissions-processus/su.md
+          - Sudo: 01-fundamentals/permissions-processus/sudo.md
+          - Whoami: 01-fundamentals/permissions-processus/whoami.md
+          - Who: 01-fundamentals/permissions-processus/who.md
+          - Id: 01-fundamentals/permissions-processus/id.md
+          - Groups: 01-fundamentals/permissions-processus/groups.md
+          - ps: 01-fundamentals/permissions-processus/ps.md
+          - top & htop: 01-fundamentals/permissions-processus/top-htop.md
+          - pstree: 01-fundamentals/permissions-processus/pstree.md
+          - kill: 01-fundamentals/permissions-processus/kill.md
+          - killall & pkill: 01-fundamentals/permissions-processus/killall-pkill.md
+          - Job Control (&, fg, bg, jobs): 01-fundamentals/permissions-processus/job-control.md
+          - nohup & disown: 01-fundamentals/permissions-processus/nohup-disown.md
+          - Crontab: 01-fundamentals/permissions-processus/crontab.md
+      - Système, Disque & Archivage:
+          - df: 01-fundamentals/systeme-admin/df.md
+          - du: 01-fundamentals/systeme-admin/du.md
+          - free: 01-fundamentals/systeme-admin/free.md
+          - tar: 01-fundamentals/systeme-admin/tar.md
+          - zip / unzip: 01-fundamentals/systeme-admin/zip-unzip.md
+          - gzip / gunzip: 01-fundamentals/systeme-admin/gzip-gunzip.md
+          - bzip2: 01-fundamentals/systeme-admin/bzip2.md
+          - Fichiers et Dossiers: 01-fundamentals/systeme-admin/fichiers-et-dossiers.md
+          - Shell & Environnement: 01-fundamentals/systeme-admin/shell-et-environnement.md
+          - Paquets & Logs: 01-fundamentals/systeme-admin/gestion-paquets-log.md
+          - Systemd & Services: 01-fundamentals/systeme-admin/systemd-et-services.md
+          - Système, Disque & Boot: 01-fundamentals/systeme-admin/systeme-disk-boot.md
+          - Bash Scripting: 01-fundamentals/systeme-admin/bash-scripting.md
+      - Réseau - Bases & Diagnostic:
+          - ip (interfaces & routes): 01-fundamentals/reseau/ip.md
+          - ss (sockets & ports): 01-fundamentals/reseau/ss.md
+          - lsof (fichiers & réseau): 01-fundamentals/reseau/lsof.md
+          - ping: 01-fundamentals/reseau/ping.md
+          - traceroute & mtr: 01-fundamentals/reseau/traceroute-mtr.md
+          - dig: 01-fundamentals/reseau/dig.md
+          - nslookup: 01-fundamentals/reseau/nslookup.md
+          - host: 01-fundamentals/reseau/host.md
+          - Tcpdump: 01-fundamentals/reseau/tcpdump.md
+          - curl: 01-fundamentals/reseau/curl.md
+          - wget: 01-fundamentals/reseau/wget.md
+          - OpenSSL: 01-fundamentals/reseau/openssl.md
+          - SSH: 01-fundamentals/reseau/ssh.md
+          - Clés SSH & Auth: 01-fundamentals/reseau/cles-ssh.md
+          - SCP: 01-fundamentals/reseau/scp.md
+          - Rsync: 01-fundamentals/reseau/rsync.md
+          - Bases Réseau & Config: 01-fundamentals/reseau/reseau-bases-config.md
+          - Routage & Subnetting: 01-fundamentals/reseau/routage-subnetting.md
+          - Protocole DNS: 01-fundamentals/reseau/dns-protocole.md
+          - Protocole FTP: 01-fundamentals/reseau/ftp-protocole.md
+          - Partage de Fichiers (NFS/SMB): 01-fundamentals/reseau/partage-et-fichiers.md
+      - Blue Team, Forensics & Théorie Sécurité:
+          - Digital Forensics Acquisition: 01-fundamentals/blue-team/digital-forensics-acquisition.md
+          - Windows Forensics: 01-fundamentals/blue-team/windows-forensics.md
+          - Log Fundamentals: 01-fundamentals/blue-team/log-fundamentals.md
+          - SOC Fundamentals: 01-fundamentals/blue-team/soc-fundamentals.md
+          - Incident Response Frameworks: 01-fundamentals/blue-team/incident-response-frameworks.md
+          - Modèle IAAA: 01-fundamentals/blue-team/iaaa-model.md
 
-  - 📚 Cours & Concepts:
-      - Système & Shell:
-          - Fichiers et Dossiers: cours/systeme-shell/fichiers-et-dossiers.md
-          - Shell & Environnement: cours/systeme-shell/shell-et-environnement.md
-          - Shell Escapes & Environnements Restreints: cours/systeme-shell/shell-escape.md
-          - Paquets & Logs: cours/systeme-shell/gestion-paquets-log.md
-          - Systemd & Services: cours/systeme-shell/systemd-et-services.md
-          - Système, Disque & Boot: cours/systeme-shell/systeme-disk-boot.md
-          - Bash Scripting: cours/systeme-shell/bash-scripting.md
-      - Réseau & Protocoles:
-          - Bases Réseau & Config: cours/reseau-protocoles/reseau-bases-config.md
-          - Routage & Subnetting: cours/reseau-protocoles/routage-subnetting.md
-          - Protocole DNS: cours/reseau-protocoles/dns-protocole.md
-          - Protocole FTP: cours/reseau-protocoles/ftp-protocole.md
-          - Partage de Fichiers (NFS/SMB): cours/reseau-protocoles/partage-et-fichiers.md
-      - Blue Team & Forensics:
-          - Digital Forensics Acquisition: cours/blue-team/digital-forensics-acquisition.md
-          - Windows Forensics: cours/blue-team/windows-forensics.md
-          - Log Fundamentals: cours/blue-team/log-fundamentals.md
+  - 🛠️ 02 - Outils de Sécurité:
+      - Reconnaissance:
+          - Nmap: 02-tooling/reconnaissance/nmap.md
+          - Gobuster: 02-tooling/reconnaissance/gobuster.md
+      - Exploitation & Cracking:
+          - Burp Suite: 02-tooling/exploitation/burp-suite.md
+          - SQLMap: 02-tooling/exploitation/sqlmap.md
+          - Hydra: 02-tooling/exploitation/hydra.md
+          - John the Ripper: 02-tooling/exploitation/john-the-ripper.md
+          - Metasploit Framework: 02-tooling/exploitation/metasploit-framework.md
+          - Mimikatz / Kiwi: 02-tooling/exploitation/mimikatz-kiwi.md
+      - Post-Exploitation & Shells:
+          - Netcat (nc): 02-tooling/post-exploitation/netcat.md
+          - Shell Listeners: 02-tooling/post-exploitation/shell-listeners.md
+          - Reverse & Bind Shells: 02-tooling/post-exploitation/reverse-bind-shells.md
+          - Meterpreter: 02-tooling/post-exploitation/meterpreter.md
+          - Msfvenom: 02-tooling/post-exploitation/msfvenom.md
+      - Analyse Réseau & Forensics Outillée:
+          - Wireshark: 02-tooling/analyse-reseau/wireshark.md
+          - Journaux Windows CLI (wevtutil/Get-WinEvent): 02-tooling/forensics/windows-event-logs-cli.md
 
-  - ⚔️ Attaques, Vulnérabilités & Techniques:
-      - Attaques Réseau & Web:
-          - ARP Spoofing & MitM: attaques/reseau-web/arp-spoofing-et-mitm.md
-          - Injection SQL (SQLi): attaques/reseau-web/sqli.md
-          - Cross-Site Scripting (XSS): attaques/reseau-web/xss.md
-          - Inclusions de Fichiers (LFI / RFI): attaques/reseau-web/lfi-rfi.md
-          - Web Shells: attaques/reseau-web/web-shells.md
-          - Défaillances d'Authentification: attaques/reseau-web/authentication-failures.md
-          - Broken Access Control: attaques/reseau-web/broken-access-control.md
-          - CVE-2024-21413 (Outlook Moniker Link): attaques/reseau-web/cve-2024-21413.md
-      - Post-Exploitation & Payloads:
-          - Shell Listeners: attaques/post-exploitation/shell-listeners.md
-          - Reverse & Bind Shells: attaques/post-exploitation/reverse-bind-shells.md
-          - Meterpreter: attaques/post-exploitation/meterpreter.md
-          - Msfvenom: attaques/post-exploitation/msfvenom.md
-      - Défense & Détection:
-          - SIEM & Règles de Détection: attaques/defense/siem-fundamentals-rules.md
+  - ⚔️ 03 - Vulnérabilités & Attaques:
+      - Attaques Web:
+          - ARP Spoofing & MitM: 03-vulnerabilities-attacks/web/arp-spoofing-et-mitm.md
+          - Injection SQL (SQLi): 03-vulnerabilities-attacks/web/sqli.md
+          - Cross-Site Scripting (XSS): 03-vulnerabilities-attacks/web/xss.md
+          - Inclusions de Fichiers (LFI / RFI): 03-vulnerabilities-attacks/web/lfi-rfi.md
+          - Web Shells: 03-vulnerabilities-attacks/web/web-shells.md
+          - Défaillances d'Authentification: 03-vulnerabilities-attacks/web/authentication-failures.md
+          - Broken Access Control: 03-vulnerabilities-attacks/web/broken-access-control.md
+          - CVE-2024-21413 (Outlook Moniker Link): 03-vulnerabilities-attacks/web/cve-2024-21413.md
+      - Système & Privilege Escalation:
+          - Shell Escapes & Environnements Restreints: 03-vulnerabilities-attacks/system-privesc/shell-escape.md
+      - Détection & Défense:
+          - SIEM & Règles de Détection: 03-vulnerabilities-attacks/detection/siem-fundamentals-rules.md
+      - Méthodologies:
+          - OWASP Top 10 Overview: 03-vulnerabilities-attacks/methodologie/owasp-top10-cheatsheet.md
 
-  - 📝 Write-ups & Labs:
+  - 📝 04 - Write-ups & Labs:
       - TryHackMe (THM):
-          - Index THM: writeups/thm/index.md
+          - Index THM: 04-writeups/thm/index.md
       - HackTheBox (HTB):
-          - Index HTB: writeups/htb/index.md
+          - Index HTB: 04-writeups/htb/index.md
       - Root-Me:
-          - Index Root-Me: writeups/rootme/index.md
+          - Index Root-Me: 04-writeups/rootme/index.md
       - OverTheWire (OTW):
-          - Index OTW: writeups/otw/index.md
-
-  - 📐 Méthodologies & Références:
-      - OWASP Top 10 Overview: methodologies/owasp-top10-cheatsheet.md
-      - Modèle IAAA: methodologies/iaaa-model.md
-      - SOC Fundamentals: methodologies/soc-fundamentals.md
-      - Incident Response Frameworks: methodologies/incident-response-frameworks.md
+          - Index OTW: 04-writeups/otw/index.md
