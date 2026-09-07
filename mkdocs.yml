@@ -69,94 +69,97 @@ plugins:
 
 nav:
   - 🧱 01 - Fondamentaux:
-      - CLI de Base & Manipulation de Texte:
-          - Grep: 01-fundamentals/cli-base/grep.md
-          - Sed: 01-fundamentals/cli-base/sed.md
-          - Awk: 01-fundamentals/cli-base/awk.md
-          - Tr: 01-fundamentals/cli-base/tr.md
-          - Vim: 01-fundamentals/cli-base/vim.md
-          - Cat: 01-fundamentals/cli-base/cat.md
-          - Less: 01-fundamentals/cli-base/less.md
-          - Head: 01-fundamentals/cli-base/head.md
-          - Tail: 01-fundamentals/cli-base/tail.md
-          - Nl: 01-fundamentals/cli-base/nl.md
-          - Diff (Comparaison): 01-fundamentals/cli-base/diff.md
-          - Sort: 01-fundamentals/cli-base/sort.md
-          - Uniq: 01-fundamentals/cli-base/uniq.md
-          - Cut: 01-fundamentals/cli-base/cut.md
-          - Cut / Paste: 01-fundamentals/cli-base/paste.md
-          - Join: 01-fundamentals/cli-base/join.md
-          - Split: 01-fundamentals/cli-base/split.md
-          - Wc: 01-fundamentals/cli-base/wc.md
-          - Expand & Unexpand: 01-fundamentals/cli-base/expand-unexpand.md
-          - Seq (Génération de séries): 01-fundamentals/cli-base/seq.md
-          - Base64: 01-fundamentals/cli-base/base64.md
-          - Xxd (Hexdump & Patching): 01-fundamentals/cli-base/xxd.md
-          - Find: 01-fundamentals/cli-base/find.md
-          - Tee: 01-fundamentals/cli-base/tee.md
-          - Date: 01-fundamentals/cli-base/date.md
-          - Historique & Raccourcis: 01-fundamentals/cli-base/history.md
-          - Alias Shell: 01-fundamentals/cli-base/alias.md
-          - Variables d'Environnement: 01-fundamentals/cli-base/variables-environnement.md
-          - Substitutions & Expansions: 01-fundamentals/cli-base/substitutions-expansions.md
-          - One-Liners & Boucles: 01-fundamentals/cli-base/one-liners-boucles.md
-          - CMD Windows: 01-fundamentals/cli-base/cmd-windows.md
-          - PowerShell Basics: 01-fundamentals/cli-base/powershell-basics.md
-      - Permissions, Identités & Processus:
-          - Chmod: 01-fundamentals/permissions-processus/chmod.md
-          - Chown: 01-fundamentals/permissions-processus/chown.md
-          - Umask: 01-fundamentals/permissions-processus/umask.md
-          - Su: 01-fundamentals/permissions-processus/su.md
-          - Sudo: 01-fundamentals/permissions-processus/sudo.md
-          - Whoami: 01-fundamentals/permissions-processus/whoami.md
-          - Who: 01-fundamentals/permissions-processus/who.md
-          - Id: 01-fundamentals/permissions-processus/id.md
-          - Groups: 01-fundamentals/permissions-processus/groups.md
-          - ps: 01-fundamentals/permissions-processus/ps.md
-          - top & htop: 01-fundamentals/permissions-processus/top-htop.md
-          - pstree: 01-fundamentals/permissions-processus/pstree.md
-          - kill: 01-fundamentals/permissions-processus/kill.md
-          - killall & pkill: 01-fundamentals/permissions-processus/killall-pkill.md
-          - Job Control (&, fg, bg, jobs): 01-fundamentals/permissions-processus/job-control.md
-          - nohup & disown: 01-fundamentals/permissions-processus/nohup-disown.md
-          - Crontab: 01-fundamentals/permissions-processus/crontab.md
-      - Système, Disque & Archivage:
-          - df: 01-fundamentals/systeme-admin/df.md
-          - du: 01-fundamentals/systeme-admin/du.md
-          - free: 01-fundamentals/systeme-admin/free.md
-          - tar: 01-fundamentals/systeme-admin/tar.md
-          - zip / unzip: 01-fundamentals/systeme-admin/zip-unzip.md
-          - gzip / gunzip: 01-fundamentals/systeme-admin/gzip-gunzip.md
-          - bzip2: 01-fundamentals/systeme-admin/bzip2.md
-          - Fichiers et Dossiers: 01-fundamentals/systeme-admin/fichiers-et-dossiers.md
-          - Shell & Environnement: 01-fundamentals/systeme-admin/shell-et-environnement.md
-          - Paquets & Logs: 01-fundamentals/systeme-admin/gestion-paquets-log.md
-          - Systemd & Services: 01-fundamentals/systeme-admin/systemd-et-services.md
-          - Système, Disque & Boot: 01-fundamentals/systeme-admin/systeme-disk-boot.md
-          - Bash Scripting: 01-fundamentals/systeme-admin/bash-scripting.md
-      - Réseau - Bases & Diagnostic:
-          - ip (interfaces & routes): 01-fundamentals/reseau/ip.md
-          - ss (sockets & ports): 01-fundamentals/reseau/ss.md
-          - lsof (fichiers & réseau): 01-fundamentals/reseau/lsof.md
-          - ping: 01-fundamentals/reseau/ping.md
-          - traceroute & mtr: 01-fundamentals/reseau/traceroute-mtr.md
-          - dig: 01-fundamentals/reseau/dig.md
-          - nslookup: 01-fundamentals/reseau/nslookup.md
-          - host: 01-fundamentals/reseau/host.md
-          - Tcpdump: 01-fundamentals/reseau/tcpdump.md
-          - curl: 01-fundamentals/reseau/curl.md
-          - wget: 01-fundamentals/reseau/wget.md
-          - OpenSSL: 01-fundamentals/reseau/openssl.md
-          - SSH: 01-fundamentals/reseau/ssh.md
-          - Clés SSH & Auth: 01-fundamentals/reseau/cles-ssh.md
-          - SCP: 01-fundamentals/reseau/scp.md
-          - Rsync: 01-fundamentals/reseau/rsync.md
-          - Bases Réseau & Config: 01-fundamentals/reseau/reseau-bases-config.md
-          - Routage & Subnetting: 01-fundamentals/reseau/routage-subnetting.md
-          - Protocole DNS: 01-fundamentals/reseau/dns-protocole.md
-          - Protocole FTP: 01-fundamentals/reseau/ftp-protocole.md
-          - Partage de Fichiers (NFS/SMB): 01-fundamentals/reseau/partage-et-fichiers.md
-      - Blue Team, Forensics & Théorie Sécurité:
+      - Linux - CLI Texte & Manipulation de Fichiers:
+          - Grep: 01-fundamentals/linux/cli-texte/grep.md
+          - Sed: 01-fundamentals/linux/cli-texte/sed.md
+          - Awk: 01-fundamentals/linux/cli-texte/awk.md
+          - Tr: 01-fundamentals/linux/cli-texte/tr.md
+          - Vim: 01-fundamentals/linux/cli-texte/vim.md
+          - Cat: 01-fundamentals/linux/cli-texte/cat.md
+          - Less: 01-fundamentals/linux/cli-texte/less.md
+          - Head: 01-fundamentals/linux/cli-texte/head.md
+          - Tail: 01-fundamentals/linux/cli-texte/tail.md
+          - Nl: 01-fundamentals/linux/cli-texte/nl.md
+          - Diff (Comparaison): 01-fundamentals/linux/cli-texte/diff.md
+          - Sort: 01-fundamentals/linux/cli-texte/sort.md
+          - Uniq: 01-fundamentals/linux/cli-texte/uniq.md
+          - Cut: 01-fundamentals/linux/cli-texte/cut.md
+          - Cut / Paste: 01-fundamentals/linux/cli-texte/paste.md
+          - Join: 01-fundamentals/linux/cli-texte/join.md
+          - Split: 01-fundamentals/linux/cli-texte/split.md
+          - Wc: 01-fundamentals/linux/cli-texte/wc.md
+          - Expand & Unexpand: 01-fundamentals/linux/cli-texte/expand-unexpand.md
+          - Seq (Génération de séries): 01-fundamentals/linux/cli-texte/seq.md
+          - Base64: 01-fundamentals/linux/cli-texte/base64.md
+          - Xxd (Hexdump & Patching): 01-fundamentals/linux/cli-texte/xxd.md
+          - Find: 01-fundamentals/linux/cli-texte/find.md
+          - Tee: 01-fundamentals/linux/cli-texte/tee.md
+          - Date: 01-fundamentals/linux/cli-texte/date.md
+          - Historique & Raccourcis: 01-fundamentals/linux/cli-texte/history.md
+          - Alias Shell: 01-fundamentals/linux/cli-texte/alias.md
+          - Variables d'Environnement: 01-fundamentals/linux/cli-texte/variables-environnement.md
+          - Substitutions & Expansions: 01-fundamentals/linux/cli-texte/substitutions-expansions.md
+          - One-Liners & Boucles: 01-fundamentals/linux/cli-texte/one-liners-boucles.md
+      - Linux - Permissions, Identités & Processus:
+          - Chmod: 01-fundamentals/linux/permissions-processus/chmod.md
+          - Chown: 01-fundamentals/linux/permissions-processus/chown.md
+          - Umask: 01-fundamentals/linux/permissions-processus/umask.md
+          - Su: 01-fundamentals/linux/permissions-processus/su.md
+          - Sudo: 01-fundamentals/linux/permissions-processus/sudo.md
+          - Whoami: 01-fundamentals/linux/permissions-processus/whoami.md
+          - Who: 01-fundamentals/linux/permissions-processus/who.md
+          - Id: 01-fundamentals/linux/permissions-processus/id.md
+          - Groups: 01-fundamentals/linux/permissions-processus/groups.md
+          - ps: 01-fundamentals/linux/permissions-processus/ps.md
+          - top & htop: 01-fundamentals/linux/permissions-processus/top-htop.md
+          - pstree: 01-fundamentals/linux/permissions-processus/pstree.md
+          - kill: 01-fundamentals/linux/permissions-processus/kill.md
+          - killall & pkill: 01-fundamentals/linux/permissions-processus/killall-pkill.md
+          - Job Control (&, fg, bg, jobs): 01-fundamentals/linux/permissions-processus/job-control.md
+          - nohup & disown: 01-fundamentals/linux/permissions-processus/nohup-disown.md
+          - Crontab: 01-fundamentals/linux/permissions-processus/crontab.md
+      - Linux - Administration, Disque & Archivage:
+          - df: 01-fundamentals/linux/administration/df.md
+          - du: 01-fundamentals/linux/administration/du.md
+          - free: 01-fundamentals/linux/administration/free.md
+          - tar: 01-fundamentals/linux/administration/tar.md
+          - zip / unzip: 01-fundamentals/linux/administration/zip-unzip.md
+          - gzip / gunzip: 01-fundamentals/linux/administration/gzip-gunzip.md
+          - bzip2: 01-fundamentals/linux/administration/bzip2.md
+      - Windows - CLI:
+          - CMD Windows: 01-fundamentals/windows/cli/cmd-windows.md
+          - PowerShell Basics: 01-fundamentals/windows/cli/powershell-basics.md
+      - Cours - Système & Scripting:
+          - Fichiers et Dossiers: 01-fundamentals/cours-systeme/fichiers-et-dossiers.md
+          - Shell & Environnement: 01-fundamentals/cours-systeme/shell-et-environnement.md
+          - Paquets & Logs: 01-fundamentals/cours-systeme/gestion-paquets-log.md
+          - Systemd & Services: 01-fundamentals/cours-systeme/systemd-et-services.md
+          - Système, Disque & Boot: 01-fundamentals/cours-systeme/systeme-disk-boot.md
+          - Bash Scripting: 01-fundamentals/cours-systeme/bash-scripting.md
+      - Réseau - CLI & Diagnostic:
+          - ip (interfaces & routes): 01-fundamentals/reseau/cli-reseau/ip.md
+          - ss (sockets & ports): 01-fundamentals/reseau/cli-reseau/ss.md
+          - lsof (fichiers & réseau): 01-fundamentals/reseau/cli-reseau/lsof.md
+          - ping: 01-fundamentals/reseau/cli-reseau/ping.md
+          - traceroute & mtr: 01-fundamentals/reseau/cli-reseau/traceroute-mtr.md
+          - dig: 01-fundamentals/reseau/cli-reseau/dig.md
+          - nslookup: 01-fundamentals/reseau/cli-reseau/nslookup.md
+          - host: 01-fundamentals/reseau/cli-reseau/host.md
+          - Tcpdump: 01-fundamentals/reseau/cli-reseau/tcpdump.md
+          - curl: 01-fundamentals/reseau/cli-reseau/curl.md
+          - wget: 01-fundamentals/reseau/cli-reseau/wget.md
+          - OpenSSL: 01-fundamentals/reseau/cli-reseau/openssl.md
+          - SSH: 01-fundamentals/reseau/cli-reseau/ssh.md
+          - Clés SSH & Auth: 01-fundamentals/reseau/cli-reseau/cles-ssh.md
+          - SCP: 01-fundamentals/reseau/cli-reseau/scp.md
+          - Rsync: 01-fundamentals/reseau/cli-reseau/rsync.md
+      - Réseau - Cours & Protocoles:
+          - Bases Réseau & Config: 01-fundamentals/reseau/cours-reseau/reseau-bases-config.md
+          - Routage & Subnetting: 01-fundamentals/reseau/cours-reseau/routage-subnetting.md
+          - Protocole DNS: 01-fundamentals/reseau/cours-reseau/dns-protocole.md
+          - Protocole FTP: 01-fundamentals/reseau/cours-reseau/ftp-protocole.md
+          - Partage de Fichiers (NFS/SMB): 01-fundamentals/reseau/cours-reseau/partage-et-fichiers.md
+      - Blue Team & Théorie Sécurité:
           - Digital Forensics Acquisition: 01-fundamentals/blue-team/digital-forensics-acquisition.md
           - Windows Forensics: 01-fundamentals/blue-team/windows-forensics.md
           - Log Fundamentals: 01-fundamentals/blue-team/log-fundamentals.md
