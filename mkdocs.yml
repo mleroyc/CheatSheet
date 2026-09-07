@@ -190,16 +190,18 @@ nav:
 
   - ⚔️ 03 - Vulnérabilités & Attaques:
       - Attaques Web:
-          - ARP Spoofing & MitM: 03-vulnerabilities-attacks/web/arp-spoofing-et-mitm.md
           - Injection SQL (SQLi): 03-vulnerabilities-attacks/web/sqli.md
           - Cross-Site Scripting (XSS): 03-vulnerabilities-attacks/web/xss.md
           - Inclusions de Fichiers (LFI / RFI): 03-vulnerabilities-attacks/web/lfi-rfi.md
           - Web Shells: 03-vulnerabilities-attacks/web/web-shells.md
           - Défaillances d'Authentification: 03-vulnerabilities-attacks/web/authentication-failures.md
           - Broken Access Control: 03-vulnerabilities-attacks/web/broken-access-control.md
-          - CVE-2024-21413 (Outlook Moniker Link): 03-vulnerabilities-attacks/web/cve-2024-21413.md
+      - Attaques Réseau & Infra:
+          - ARP Spoofing & MitM: 03-vulnerabilities-attacks/network/arp-spoofing-et-mitm.md
       - Système & Privilege Escalation:
           - Shell Escapes & Environnements Restreints: 03-vulnerabilities-attacks/system-privesc/shell-escape.md
+      - CVE & Exploits Spécifiques:
+          - CVE-2024-21413 (Outlook Moniker Link): 03-vulnerabilities-attacks/cve-exploits/cve-2024-21413.md
       - Détection & Défense:
           - SIEM & Règles de Détection: 03-vulnerabilities-attacks/detection/siem-fundamentals-rules.md
       - Méthodologies:
