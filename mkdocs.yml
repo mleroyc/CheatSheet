@@ -219,10 +219,10 @@ nav:
 
   - 📖 05 - Cours:
       - Linux :
-          - Index Linux: 05-cours/Linux/index.html
+          - Index Linux: 05-cours/Linux/index.md
       - Windows :
-          - Index Windows: 05-cours/Windows/index.html
+          - Index Windows: 05-cours/Windows/index.md
       - Réseaux :
-          - Index Réseaux: 05-cours/Réseaux/index.html
+          - Index Réseaux: 05-cours/Réseaux/index.md
       - Web :
-          - Index Web: 05-cours/Web/index.html
+          - Index Web: 05-cours/Web/index.md

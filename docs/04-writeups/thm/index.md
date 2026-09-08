@@ -14,4 +14,10 @@ Chaque fiche détaille la méthodologie d'attaque, les vulnérabilités identifi
 
 ---
 
+## 📌 Liste des Labs
+
+| Lab | Catégorie | Difficulté | Lien GitHub |
+| :--- | :--- | :--- | :--- |
+| **Love Letter Locker** | Web Security (IDOR) | Easy | [Consulter le Writeup ↗](https://github.com/mleroyc/Writeups/blob/main/TryHackMe/Labs/Writeup%20-%20Love%20Letter%20Locker.md) |
+
 > 💡 **Remarque :** Les liens ci-dessus redirigent vers le dépôt GitHub distant où sont versionnés les fichiers Markdown complets.
