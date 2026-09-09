@@ -67,6 +67,7 @@ plugins:
   - minify:
       minify_html: true
 
+
 nav:
   - 🧱 01 - Fondamentaux:
       - Linux:
