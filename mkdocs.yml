@@ -67,7 +67,6 @@ plugins:
   - minify:
       minify_html: true
 
-
 nav:
   - 🧱 01 - Fondamentaux:
       - Linux:
@@ -157,8 +156,6 @@ nav:
           - Metasploit Framework: 02-tooling/exploitation/metasploit-framework.md
           - Mimikatz & Kiwi: 02-tooling/exploitation/mimikatz-kiwi.md
           - SQLMap: 02-tooling/exploitation/sqlmap.md
-      - Forensics:
-          # Dossier vide pour l'instant
       - Post-Exploitation:
           - Meterpreter: 02-tooling/post-exploitation/meterpreter.md
           - Msfvenom: 02-tooling/post-exploitation/msfvenom.md
@@ -173,7 +170,7 @@ nav:
       - CVE & Exploits:
           - CVE-2024-21413: 03-vulnerabilities-attacks/cve-exploits/cve-2024-21413.md
       - Méthodologie:
-          - Reconnaissance: 03-vulnerabilities-attacks/methodologie/Reconnaissance/
+          - Reconnaissance: 03-vulnerabilities-attacks/methodologie/Reconnaissance/index.md
       - Réseau:
           - ARP Spoofing & MitM: 03-vulnerabilities-attacks/network/arp-spoofing-et-mitm.md
       - Système & PrivEsc:
