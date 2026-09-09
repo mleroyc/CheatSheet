@@ -64,3 +64,120 @@ ssh -D 1080 -N admin@pivot.internal.example.com
 
 !!! tip "Automatiser une commande distante en toute sécurité"
     `ssh hote "commande"` exécute la commande et referme la connexion automatiquement — idéal dans des scripts de supervision ou de déploiement sans laisser de session interactive ouverte inutilement.
+
+## 6. Génération et gestion des clés SSH (Privées / Publiques)
+
+L'authentification par paire de clés (asymétrique) est la méthode recommandée en remplacement de l'authentification par mot de passe : elle est à la fois plus robuste face au brute-force et plus pratique à l'usage une fois combinée à un agent SSH.
+
+### 6.1 Génération de paires de clés (`ssh-keygen`)
+
+**Génération moderne recommandée (Ed25519)**
+
+L'algorithme **Ed25519** (courbe elliptique) est aujourd'hui recommandé par défaut : clés courtes, génération et vérification rapides, et niveau de sécurité élevé.
+
+```bash
+ssh-keygen -t ed25519 -C "admin@domaine.com"
+```
+
+**Génération RSA (legacy/fallback, taille minimale 4096 bits)**
+
+RSA reste utile pour la compatibilité avec des systèmes anciens ne supportant pas Ed25519. Dans ce cas, une taille de clé de **4096 bits minimum** est requise.
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "admin@domaine.com"
+```
+
+**Options clés de `ssh-keygen`**
+
+| Option | Effet |
+|---|---|
+| `-t` | Type d'algorithme de clé (`ed25519`, `rsa`, `ecdsa`, ...) |
+| `-b` | Taille de la clé en bits (pertinent pour RSA, ex : `4096`) |
+| `-C` | Commentaire associé à la clé (généralement un identifiant/email) |
+| `-f` | Chemin et nom du fichier de sortie pour la clé générée |
+| `-N` | Définit la passphrase directement en ligne de commande (utile en scripting) |
+
+!!! warning "Imposer une passphrase robuste"
+    Lors de la génération, `ssh-keygen` propose de définir une **passphrase** protégeant la clé privée. Cette étape ne doit **jamais** être court-circuitée (passphrase vide) sur un poste de travail ou un compte à privilèges : sans passphrase, le simple vol du fichier de clé privée suffit à usurper l'identité de son propriétaire.
+
+### 6.2 Anatomie et sécurité des fichiers de clés
+
+Une paire de clés générée par `ssh-keygen` produit deux fichiers aux rôles strictement distincts :
+
+- **`id_ed25519`** (sans extension) : la **clé privée**, strictement confidentielle, ne doit **jamais** quitter la machine sur laquelle elle a été générée ni être partagée, copiée sur un support non chiffré, ou envoyée par un canal non sécurisé.
+- **`id_ed25519.pub`** : la **clé publique**, destinée à être **distribuée** et déposée dans le fichier `~/.ssh/authorized_keys` de chaque serveur distant auquel on souhaite se connecter.
+
+**Permissions POSIX obligatoires (principe du moindre privilège)**
+
+| Élément | Permissions | Représentation |
+|---|---|---|
+| Répertoire `~/.ssh` | `700` | `drwx------` |
+| Clé privée (`id_ed25519`) | `600` | `-rw-------` |
+| Clé publique (`id_ed25519.pub`) et `authorized_keys` | `644` (ou `600`) | `-rw-r--r--` |
+
+!!! danger "Refus de connexion et exposition en cas de permissions trop ouvertes"
+    La plupart des implémentations SSH (OpenSSH en tête) **refusent d'utiliser une clé privée** dont les permissions sont trop permissives (ex : lisible par le groupe ou par tous), et affichent une erreur du type `UNPROTECTED PRIVATE KEY FILE!`. Au-delà du blocage fonctionnel, des permissions trop larges sur une clé **sans passphrase** exposent directement l'identité associée à quiconque obtient un accès local, même non privilégié, à la machine.
+
+**Commandes de correction rapide des permissions**
+
+```bash
+chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_ed25519 && chmod 644 ~/.ssh/authorized_keys
+```
+
+### 6.3 Déploiement et opérations sur les clés
+
+**Copie automatisée de la clé publique vers le serveur distant**
+
+```bash
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@remote-host
+```
+
+**Extraction/Régénération manuelle de la clé publique à partir d'une clé privée existante**
+
+Utile si le fichier `.pub` a été perdu alors que la clé privée est toujours disponible :
+
+```bash
+ssh-keygen -y -f ~/.ssh/id_ed25519 > ~/.ssh/id_ed25519.pub
+```
+
+**Changement ou ajout de passphrase sur une clé privée existante sans régénérer la paire**
+
+```bash
+ssh-keygen -p -f ~/.ssh/id_ed25519
+```
+
+**Affichage de l'empreinte (fingerprint) et du visuel ASCII d'une clé**
+
+L'empreinte permet de vérifier rapidement l'identité d'une clé sans comparer l'intégralité du blob, notamment pour valider une clé hôte lors d'une première connexion.
+
+```bash
+ssh-keygen -l -f ~/.ssh/id_ed25519.pub
+ssh-keygen -lv -f ~/.ssh/id_ed25519.pub
+```
+
+### 6.4 Utilisation de l'Agent SSH (`ssh-agent`)
+
+`ssh-agent` permet de charger une clé privée déchiffrée en mémoire (après saisie unique de la passphrase), afin d'éviter de la resaisir à chaque connexion durant la session.
+
+**Démarrage de l'agent et chargement d'une clé privée**
+
+```bash
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+```
+
+**Gestion des clés chargées en mémoire**
+
+```bash
+# Lister les clés actuellement chargées dans l'agent
+ssh-add -l
+
+# Vider l'agent (supprime toutes les clés de la mémoire)
+ssh-add -D
+```
+
+!!! tip "Confort et sécurité au quotidien"
+    Combiner `ssh-agent` avec des clés Ed25519 protégées par passphrase offre le meilleur compromis : la clé privée reste chiffrée sur le disque, et la passphrase n'est saisie qu'une fois par session, sans jamais transiter en clair sur le réseau.
+
+!!! danger "Portée de l'agent lors d'un rebond SSH (agent forwarding)"
+    L'option `-A` (agent forwarding) expose l'agent local — et donc la capacité de signer des authentifications avec la clé privée — à chaque serveur intermédiaire sur lequel on rebondit. Un serveur distant compromis peut alors utiliser cet agent forwardé pour s'authentifier ailleurs au nom de l'utilisateur. À réserver aux environnements de confiance, ou à remplacer par du `ProxyJump` (`-J`) qui ne partage pas l'agent avec les hôtes intermédiaires.

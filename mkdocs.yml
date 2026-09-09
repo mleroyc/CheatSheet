@@ -143,8 +143,10 @@ nav:
               - Ss: 01-fundamentals/reseau/cli-reseau/ss.md
               - Ssh: 01-fundamentals/reseau/cli-reseau/ssh.md
               - Tcpdump: 01-fundamentals/reseau/cli-reseau/tcpdump.md
+              - Telnet: 01-fundamentals/reseau/cli-reseau/telnet.md
               - Traceroute & Mtr: 01-fundamentals/reseau/cli-reseau/traceroute-mtr.md
               - Wget: 01-fundamentals/reseau/cli-reseau/wget.md
+              - Whois & RDAP: 01-fundamentals/reseau/cli-reseau/whois-rdap.md
 
   - 🛠️ 02 - Outils de Sécurité:
       - Analyse Réseau:
@@ -170,9 +172,13 @@ nav:
       - CVE & Exploits:
           - CVE-2024-21413: 03-vulnerabilities-attacks/cve-exploits/cve-2024-21413.md
       - Méthodologie:
-          - Reconnaissance: 03-vulnerabilities-attacks/methodologie/Reconnaissance/index.md
+          - Exploitation:
+              - Password Attacks Methodology: 03-vulnerabilities-attacks/methodologie/Exploitation/password-attacks-methodology.md
+          - Reconnaissance:
+              - Recon Active & Passive: 03-vulnerabilities-attacks/methodologie/Reconnaissance/recon-active-passive.md
       - Réseau:
-          - ARP Spoofing & MitM: 03-vulnerabilities-attacks/network/arp-spoofing-et-mitm.md
+          - Network Sniffing & MitM Techniques: 03-vulnerabilities-attacks/network/network-sniffing-mitm-techniques.md
+          - SSL Stripping & Downgrade Attacks: 03-vulnerabilities-attacks/network/ssl-stripping-downgrade-attacks.md
       - Système & PrivEsc:
           - Shell Escape: 03-vulnerabilities-attacks/system-privesc/shell-escape.md
       - Web:
@@ -222,9 +228,16 @@ nav:
           - Bases Réseau & Configuration: 05-cours/Réseaux/reseau-bases-config.md
           - Routage & Subnetting: 05-cours/Réseaux/routage-subnetting.md
           - Protocoles:
-              - Protocole DNS: 05-cours/Réseaux/protocoles/dns-protocole.md
-              - Protocole FTP: 05-cours/Réseaux/protocoles/ftp-protocole.md
-              - Partage & Fichiers: 05-cours/Réseaux/protocoles/partage-et-fichiers.md
+              - ARP: 05-cours/Réseaux/protocoles/arp.md
+              - DNS: 05-cours/Réseaux/protocoles/dns.md
+              - FTP, FTPS & SFTP: 05-cours/Réseaux/protocoles/ftp-ftps-sftp.md
+              - HTTP & HTTPS: 05-cours/Réseaux/protocoles/http-https.md
+              - IMAP & IMAPS: 05-cours/Réseaux/protocoles/imap-imaps.md
+              - NFS & SMB: 05-cours/Réseaux/protocoles/nfs-smb.md
+              - POP3 & POP3S: 05-cours/Réseaux/protocoles/pop3-pop3s.md
+              - SMTP & SMTPS: 05-cours/Réseaux/protocoles/smtp-smtps.md
+              - SSL & TLS: 05-cours/Réseaux/protocoles/ssl-tls.md
+              - Telnet: 05-cours/Réseaux/protocoles/telnet.md
       - Windows:
           - Index Windows: 05-cours/Windows/index.md
           - CMD Windows: 05-cours/Windows/cmd-windows.md
