@@ -114,7 +114,7 @@ curl -X POST "http://cible.com/page.php?file=php://input" \
 ```
 
 !!! warning "Prérequis serveur"
-    Le wrapper `php://input` nécessite `allow_url_include = Off` fonctionnel (il n'est pas concerné par cette directive) mais reste soumis à `allow_url_fopen` et à la configuration générale des wrappers PHP.
+    Le wrapper `php://input` nécessite `allow_url_include = On` mais n'est pas soumis à `allow_url_fopen`.
 
 ---
 
