@@ -157,7 +157,6 @@ nav:
           - John the Ripper: 02-tooling/exploitation/john-the-ripper.md
           - Metasploit Framework: 02-tooling/exploitation/metasploit-framework.md
           - Mimikatz & Kiwi: 02-tooling/exploitation/mimikatz-kiwi.md
-          - SQLi: 02-tooling/exploitation/sqli.md
           - SQLMap: 02-tooling/exploitation/sqlmap.md
       - Post-Exploitation:
           - Meterpreter: 02-tooling/post-exploitation/meterpreter.md
