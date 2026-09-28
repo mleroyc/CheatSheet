@@ -798,3 +798,46 @@ Le principe : l'entrée utilisateur ne sert **jamais** directement de fragment S
 
 !!! danger "Rappel essentiel"
     Aucune de ces contre-mesures n'est suffisante isolément. Les requêtes préparées traitent la cause racine pour les données, mais doivent être complétées par du whitelisting pour les éléments structurels et par une défense en profondeur (moindre privilège, monitoring) pour limiter l'impact en cas de régression — notamment sur le SQLi de second ordre (section 6), qui contourne le paramétrage par définition en le déplaçant vers un point de réutilisation non couvert.
+
+---
+
+## Synthèse de révision (Flashcard mentale)
+
+### 1. Mécanisme de base (Cause racine)
+
+- Une injection SQL naît d'une **confusion entre code et données** : l'application construit sa requête SQL par **concaténation de chaînes**, en insérant directement une entrée utilisateur non fiable dans le flux de commande envoyé au SGBD.
+- Le SGBD n'a aucun moyen de distinguer "ce qui est la structure de la requête voulue par le développeur" de "ce qui est une donnée fournie par l'utilisateur" : tout est interprété comme une seule et même chaîne de syntaxe à exécuter.
+- Dès lors qu'une entrée peut contenir des métacaractères ou mots-clés SQL (apostrophe, commentaire, opérateurs logiques, sous-requêtes) qui sont **interprétés** plutôt que traités comme du texte inerte, l'attaquant peut faire dévier la logique de la requête d'origine, l'étendre, ou en exécuter une toute autre.
+- La cause racine n'est donc jamais "un mauvais filtre" mais l'**absence de séparation structurelle** entre le canal de contrôle (la requête) et le canal de données (les valeurs) — c'est cette confusion, et elle seule, que la remédiation doit éliminer.
+
+### 2. Vecteurs & Formes d'exploitation
+
+- **In-Band** : le résultat de l'exploitation est visible directement dans le même canal que la réponse applicative normale (contenu de la page, message d'erreur) — c'est la forme la plus rapide à exploiter car l'information est immédiatement disponible.
+- **UNION-Based** : sous-catégorie In-Band où l'attaquant combine une requête arbitraire à la requête légitime pour faire apparaître des données étrangères dans le rendu habituel de l'application.
+- **Error-Based** : sous-catégorie In-Band où la donnée recherchée fuit directement dans le message d'erreur technique renvoyé par le SGBD, sans itération.
+- **Blind (Boolean-Based)** : l'application ne renvoie aucune donnée ni erreur exploitable, mais son comportement varie de façon binaire (contenu, redirection) selon la véracité d'une condition injectée — l'information est déduite par déduction logique, caractère par caractère.
+- **Blind (erreurs conditionnelles)** : variante du Blind où le signal binaire n'est plus le contenu mais le déclenchement (ou non) d'une exception SQL, observable via le code de statut HTTP.
+- **Time-Based** : variante du Blind utilisée quand même le comportement de l'application ne varie jamais visiblement ; le signal devient alors un délai de traitement artificiellement introduit et conditionné à la véracité d'un test.
+- **Out-of-Band (OAST)** : forme utilisée quand aucun canal de réponse (contenu, erreur, délai) n'est exploitable ; l'attaquant force le SGBD lui-même à initier une connexion sortante vers une infrastructure qu'il contrôle, faisant du SGBD le vecteur de sa propre exfiltration.
+- **Second-Order** : forme où l'injection n'est pas exploitée au moment de la soumission (qui peut être parfaitement sécurisée) mais lors d'une réutilisation ultérieure, non sécurisée, de la donnée déjà stockée dans une autre fonctionnalité.
+
+### 3. Workflow de diagnostic (Arbre de décision)
+
+1. **Casser la syntaxe** avec un caractère spécial de terminaison de chaîne → si une erreur SQL brute apparaît, la vulnérabilité est confirmée et potentiellement exploitable en In-Band/Error-Based.
+2. Si l'erreur est masquée (page générique, code 500 sans détail) → **comparer le comportement de l'application entre une condition logiquement vraie et une condition logiquement fausse** sur le contenu renvoyé → une divergence confirme un Blind Boolean-Based.
+3. Si le contenu ne varie jamais → **observer si le code de statut HTTP varie** selon la véracité d'une condition conçue pour déclencher une exception uniquement si vraie → confirme des erreurs conditionnelles exploitables.
+4. Si ni le contenu ni le statut ne varient → **mesurer le temps de réponse** en conditionnant un délai artificiel à la véracité d'un test → un délai reproductible et proportionnel confirme un Time-Based Blind.
+5. Si un filtre ou pare-feu applicatif semble bloquer les tentatives → **tester des variantes syntaxiques équivalentes** (casse, encodage, formulation alternative) avant de conclure à une protection réellement efficace.
+6. Si aucun signal n'est exploitable par aucun des canaux précédents → **tester une interaction sortante vers une infrastructure contrôlée par l'auditeur** ; la réception de cette interaction constitue la seule preuve possible d'exécution dans un contexte totalement aveugle.
+7. À chaque étape, **toujours valider par un couple de tests opposés** (une condition vraie ET une condition fausse) avant de conclure : un signal isolé peut être un faux positif dû à un autre comportement applicatif.
+8. Ne jamais conclure à une absence de vulnérabilité sur la seule base d'un test négatif à une étape : chaque étape ne teste qu'une forme d'exploitation particulière, pas l'absence de la faille elle-même.
+
+### 4. Remédiation & Sécurisation
+
+- **Requêtes préparées / paramétrage systématique** : seule contre-mesure qui traite la cause racine, car elle supprime physiquement la possibilité pour une donnée d'être interprétée comme du code — le SGBD reçoit la structure de la requête et les valeurs par deux canaux distincts, jamais reconstruits en une seule chaîne.
+- **Liste blanche stricte (whitelisting)** pour tout élément structurel qui ne peut pas être paramétré nativement (noms de tables, de colonnes, direction de tri) : l'entrée utilisateur ne sert jamais de fragment de requête, uniquement de clé vers une valeur fixe définie côté serveur.
+- **Principe du moindre privilège** appliqué au compte de connexion applicatif à la base de données, afin de limiter l'impact d'une éventuelle régression future (pas d'accès en écriture si non nécessaire, pas de privilèges d'exécution de fonctions système).
+- **Désactivation de l'affichage des erreurs techniques brutes** en environnement de production, pour ne pas offrir de canal d'exfiltration direct même en cas de faille résiduelle.
+- **Validation stricte des types et formats d'entrée** en complément, jamais en remplacement du paramétrage — une défense en profondeur, pas une solution à elle seule.
+- **Cartographie des points de réutilisation de données stockées** dans le code applicatif, pour s'assurer qu'aucune donnée déjà en base n'est réinjectée plus tard dans une requête construite par concaténation (couvre le cas du Second-Order).
+- **Revue de code et tests de sécurité automatisés (SAST/DAST)** intégrés au cycle de développement, pour détecter la construction dynamique de requêtes SQL avant la mise en production plutôt qu'après un audit externe.
