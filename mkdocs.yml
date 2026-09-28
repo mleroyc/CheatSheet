@@ -188,7 +188,7 @@ nav:
           - Broken Access Control: 03-vulnerabilities-attacks/web/broken-access-control.md
           - Insecure Password Reset: 03-vulnerabilities-attacks/web/insecure-password-reset.md
           - LFI / RFI: 03-vulnerabilities-attacks/web/lfi-rfi.md
-          - SQL Injection: 03-vulnerabilities-attacks/web/sqli.md
+          - SQL Injection (Cheat Sheet): 03-vulnerabilities-attacks/web/sqli-cheat-sheet.md
           - Web Shells: 03-vulnerabilities-attacks/web/web-shells.md
           - XSS: 03-vulnerabilities-attacks/web/xss.md
 
@@ -225,6 +225,7 @@ nav:
           - Web:
               - Index Web: 05-cours/Red Team/Web/index.md
               - Authentification & Vulnérabilités: 05-cours/Red Team/Web/authentification-vulnérabilites.md
+              - Injection SQL (SQLi): 05-cours/Red Team/Web/sqli.md
       - Réseaux:
           - Index Réseaux: 05-cours/Réseaux/index.md
           - Bases Réseau & Configuration: 05-cours/Réseaux/reseau-bases-config.md
