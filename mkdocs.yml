@@ -182,14 +182,9 @@ nav:
       - Système & PrivEsc:
           - Shell Escape: 03-vulnerabilities-attacks/system-privesc/shell-escape.md
       - Web:
-          - Alternative Extensions Bypass: 03-vulnerabilities-attacks/web/alternative-extensions-bypass.md
           - Authentication Failures: 03-vulnerabilities-attacks/web/authentication-failures.md
-          - Broken Access Control: 03-vulnerabilities-attacks/web/broken-access-control.md
-          - Insecure Password Reset: 03-vulnerabilities-attacks/web/insecure-password-reset.md
-          - LFI / RFI: 03-vulnerabilities-attacks/web/lfi-rfi.md
           - SQL Injection (Cheat Sheet): 03-vulnerabilities-attacks/web/sqli-cheat-sheet.md
           - Web Shells: 03-vulnerabilities-attacks/web/web-shells.md
-          - XSS: 03-vulnerabilities-attacks/web/xss.md
 
   - 📝 04 - Write-ups & Labs:
       - Hack The Box:
@@ -222,8 +217,12 @@ nav:
       - Red Team:
           - OWASP Top 10 Cheatsheet: 05-cours/Red Team/owasp-top10-cheatsheet.md
           - Web:
-              - Index Web: 05-cours/Red Team/Web/index.md
+              - Alternative Extensions Bypass: 05-cours/Red Team/Web/alternative-extensions-bypass.md
               - Authentification & Vulnérabilités: 05-cours/Red Team/Web/authentification-vulnérabilites.md
+              - Broken Access Control: 05-cours/Red Team/Web/broken-access-control.md
+              - Index Web: 05-cours/Red Team/Web/index.md
+              - Insecure Password Reset: 05-cours/Red Team/Web/insecure-password-reset.md
+              - LFI / RFI: 05-cours/Red Team/Web/lfi-rfi.md
               - Injection SQL (SQLi): 05-cours/Red Team/Web/sqli.md
       - Réseaux:
           - Index Réseaux: 05-cours/Réseaux/index.md
