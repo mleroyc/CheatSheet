@@ -12,6 +12,163 @@ tags:
   - remediation
 ---
 
+## 🧭 Workflow de décision pour l'identification
+
+!!! danger "Cadre d'usage"
+    Ce workflow est destiné à des activités de test d'intrusion **autorisées** (pentest sous contrat, CTF, labs type PortSwigger/HackTheBox). Ne jamais tester ces techniques sur un système sans autorisation écrite explicite.
+
+Cet arbre de décision donne l'ordre opératoire à suivre sur le terrain : que tester en premier, comment lire une réponse serveur, et vers quoi pivoter en cas d'échec. Il suit la logique **"Si je teste X → Si j'obtiens Y → Alors..."** décrite dans le corps de la fiche (sections 2 à 6).
+
+```mermaid
+flowchart TD
+    A[Cible : mécanisme d'authentification] --> B[Étape 1 : Énumération de comptes]
+    B -->|Confirmé| C[Étape 2 : Brute force / Rate-limiting]
+    B -->|Non exploitable| C
+    C -->|Bypass trouvé| D[Étape 3 : Logique 2FA]
+    C -->|Rate-limit robuste| D
+    D -->|Bypass trouvé| E[Étape 4 : Password Reset]
+    D -->|2FA robuste| E
+    E -->|Faille trouvée| F[Étape 5 : Password Change / IDOR]
+    E -->|Reset robuste| F
+    F -->|IDOR confirmé| G[Étape 6 : Remember-me / Tokens]
+    F -->|Pas d'IDOR| G
+```
+
+### Étape 1 — Énumération de comptes utilisateur
+
+**Test / payload de détection.** Envoyer deux requêtes de login avec un identifiant *connu invalide* et un identifiant *probable* (ex. `admin`), en conservant tous les autres paramètres strictement identiques :
+
+```http
+POST /login HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+username=zzzz_inexistant&password=Test123!
+```
+```http
+POST /login HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=Test123!
+```
+
+**Interprétation du résultat**
+
+| Résultat obtenu | Verdict |
+|---|---|
+| Code HTTP différent (`200` vs `404`), corps de réponse différent (`"Invalid password"` vs `"User not found"`), ou écart de latence > ~50-100 ms reproductible | ✅ **Faille confirmée**, sous la forme **énumération par canal auxiliaire** (statut HTTP / message d'erreur / timing), car le serveur traite différemment le cas "compte existant" et "compte inexistant" avant même la vérification du mot de passe. |
+| Réponses strictement identiques (code, corps, en-têtes, temps de réponse stable sur plusieurs mesures) | ❌ **Non exploitable de cette manière**, car le serveur normalise sa réponse indépendamment de l'existence du compte (bonne pratique appliquée). |
+
+**Décision / pivot.** Si confirmé → construire une wordlist de comptes valides (Burp Intruder / script `requests`) avant de passer à l'étape 2 pour cibler le brute force. Si non exploitable → passer directement à l'étape 2 avec un jeu d'identifiants génériques (`admin`, patterns e-mail OSINT).
+
+---
+
+### Étape 2 — Brute force & contournement du rate-limiting
+
+**Test / payload de détection.** Envoyer un mot de passe unique sous forme de tableau JSON au lieu d'une valeur scalaire :
+
+```http
+POST /api/login HTTP/1.1
+Content-Type: application/json
+
+{"username": "victime", "password": ["pass1","pass2","pass3","pass4"]}
+```
+
+**Interprétation du résultat**
+
+- **J'obtiens une réponse traitant chaque valeur du tableau comme une tentative distincte (plusieurs `Invalid password` ou un `200 OK` sur l'une des valeurs), sans déclenchement de blocage** → **Faille confirmée**, sous la forme **contournement du rate-limiting par parsing de tableau**, car le compteur de tentatives côté serveur comptabilise l'appel HTTP comme une seule requête au lieu d'itérer sur chaque valeur testée.
+- **J'obtiens un rejet immédiat (`400 Bad Request`, erreur de schéma) ou un blocage après un seuil identique à une requête scalaire** → **Non exploitable de cette manière**, car le serveur valide strictement le type de champ attendu.
+
+**Décision / pivot.** Si confirmé → automatiser le brute force via ce vecteur, ou tester le **password spraying** (un seul mot de passe commun sur de nombreux comptes) pour rester sous le seuil de verrouillage par compte. Si non exploitable → tester l'intercalation de requêtes légitimes (`GET /login`) entre les tentatives pour évaluer une fenêtre glissante mal implémentée ; si toujours robuste, pivoter vers l'étape 3 (2FA), le facteur mot de passe étant traité comme suffisamment protégé.
+
+---
+
+### Étape 3 — Logique applicative du 2FA
+
+**Test / payload de détection.** Après un login valide (étape 1 réussie), au lieu de soumettre le code 2FA, naviguer directement vers une ressource protégée en réutilisant le cookie de session émis à l'issue du login :
+
+```text
+1. POST /login (username + password) -> 200 OK, redirection vers /2fa-verify
+2. Observer le Set-Cookie de l'étape 1
+3. GET /dashboard  (avec ce cookie, SANS passer par /2fa-verify)
+```
+
+**Interprétation du résultat**
+
+- **J'obtiens un accès complet à `/dashboard` (200 OK, contenu privilégié)** → **Faille confirmée**, sous la forme **bypass 2FA par attribution prématurée de session**, car le cookie émis après la seule étape mot de passe est déjà pleinement privilégié côté serveur ; la vérification 2FA n'est qu'une façade front-end.
+- **J'obtiens une redirection forcée vers `/2fa-verify` ou un `401/403`** → **Faille non exploitable de cette manière**, car l'état "2FA validé" est vérifié côté serveur à chaque requête protégée.
+
+**Décision / pivot.** Si non exploitable → tester la variante "substitution de cookie `2fa_pending` entre comptes" : ouvrir une session sur son propre compte, initier en parallèle un login avec les identifiants de la victime, puis soumettre son propre code OTP valide avec le cookie `2fa_pending` de la victime. Si les deux échouent → considérer le 2FA comme robuste et pivoter vers l'étape 4 (Password Reset).
+
+---
+
+### Étape 4 — Workflow de réinitialisation de mot de passe
+
+**Test / payload de détection.** Soumettre directement l'étape finale du reset (`POST`) sans jeton valide dans le corps de la requête, après avoir simplement chargé la page du formulaire (`GET` avec token) :
+
+```text
+1. GET /reset-password?token=XYZ   -> formulaire affiché (token validé ici)
+2. POST /reset-password            -> new_password=Hacked123!  (SANS renvoyer XYZ)
+```
+
+En parallèle, tester l'injection d'un en-tête `Host` arbitraire sur la demande de reset :
+
+```http
+POST /forgot-password HTTP/1.1
+Host: attacker.com
+
+email=victime@cible.exemple
+```
+
+**Interprétation du résultat**
+
+| Test | Résultat A (confirmé) | Résultat B (non exploitable) |
+|---|---|---|
+| POST sans token | Mot de passe changé malgré l'absence de token dans le body → **faille confirmée : absence de revalidation du jeton à l'étape finale**, le serveur se fiant à un état de session temporaire posé lors du GET | `403`/erreur "token requis" → **non exploitable**, le token est revérifié à chaque étape |
+| Host Header | Le lien reçu par e-mail pointe vers `attacker.com/reset?token=...` → **faille confirmée : Host Header Injection**, l'URL de reset est construite dynamiquement à partir d'un en-tête client non fiable | Le lien reçu pointe toujours vers le domaine légitime → **non exploitable**, l'URL provient d'une variable serveur fixe (`APP_BASE_URL`) |
+
+**Décision / pivot.** Si l'un des deux est confirmé → vecteur d'Account Takeover prioritaire, à documenter immédiatement (impact critique). Si les deux sont robustes → vérifier la prédictibilité du token lui-même (`md5(email)`, concaténation timestamp/id) par génération de plusieurs tokens successifs et analyse d'entropie ; si le token est un CSPRNG haché à usage unique, pivoter vers l'étape 5.
+
+---
+
+### Étape 5 — Changement de mot de passe (IDOR)
+
+**Test / payload de détection.** Depuis une session authentifiée sur **son propre compte**, altérer un identifiant de compte transmis côté client :
+
+```http
+POST /account/change-password HTTP/1.1
+Cookie: session=att4ck3r_session_valide
+
+user_id=123&new_password=Hacked123!
+```
+
+**Interprétation du résultat**
+
+- **J'obtiens un `200 OK` et le mot de passe du compte `123` (qui n'est pas le mien) est effectivement modifié** → **Faille confirmée**, sous la forme **IDOR (Insecure Direct Object Reference)**, car le serveur détermine le compte cible à partir d'un paramètre fourni par le client plutôt que de l'identité liée à la session serveur.
+- **J'obtiens un `403 Forbidden` ou le mot de passe modifié reste celui de mon propre compte malgré le `user_id` altéré** → **Non exploitable de cette manière**, car l'identité cible est dérivée server-side de la session, indépendamment du paramètre client.
+
+**Décision / pivot.** Si confirmé → vérifier également l'absence de vérification du mot de passe actuel sur ce même endpoint (permet le vol de compte via session volée sans connaître le mot de passe d'origine). Si non exploitable → pivoter vers l'étape 6 (cookies persistants).
+
+---
+
+### Étape 6 — Cookies "Remember-me" & jetons de persistance
+
+**Test / payload de détection.** Créer deux comptes de test avec des usernames proches, comparer la structure des cookies `remember-me` émis, puis décoder :
+
+```python
+import base64
+base64.b64decode("YWRtaW46MTcyNzUxMjAwMA==")
+# -> b'admin:1727512000'
+```
+
+**Interprétation du résultat**
+
+- **Le décodage révèle une structure lisible/déductible (`username:timestamp`, `MD5(username)` sans sel, etc.) et un cookie forgé manuellement pour un autre compte est accepté par le serveur** → **Faille confirmée**, sous la forme **génération prédictible / cryptographie faible du token de persistance**, car le cookie n'est pas un secret aléatoire imprévisible mais une donnée déductible ou un simple encodage réversible.
+- **Le décodage ne révèle aucune structure exploitable (valeur haute entropie, aucune corrélation observable entre plusieurs comptes de test) et un cookie forgé est rejeté** → **Non exploitable de cette manière**, le jeton est vraisemblablement un CSPRNG opaque stocké haché côté serveur.
+
+**Décision / pivot.** Si confirmé → tenter le brute force de la plage de timestamps plausible pour un username cible connu. Si non exploitable → l'ensemble du périmètre "logique d'authentification" testé aux étapes 1-6 est jugé robuste ; documenter les résultats et, si le périmètre l'autorise, étendre l'analyse à la couche OAuth/OIDC tierce (hors détail de cette fiche, cf. section 7.1).
+
+---
+
 # Vulnérabilités de l'Authentification : Attaques, Logique Applicative et Hardening
 
 !!! danger "Cadre d'usage"
@@ -398,3 +555,41 @@ L'authentification déléguée via **OAuth 2.0** / **OpenID Connect (OIDC)** dé
 
 !!! danger "Principe directeur"
     La majorité des failles décrites dans ce document ne relèvent pas d'un défaut cryptographique, mais d'une **rupture de la chaîne de confiance côté serveur** : dès qu'une étape d'authentification se fie à une donnée fournie par le client (paramètre, en-tête `Host`, état côté front-end) plutôt qu'à l'état de session serveur, le mécanisme devient contournable.
+
+---
+
+## 🧠 Synthèse de révision (Flashcard mentale)
+
+### 1. Mécanisme de base (Cause racine)
+
+La *Broken Authentication* repose sur une confusion unique et récurrente : **le serveur accorde sa confiance à une donnée ou à un état contrôlé par le client, à la place de son propre état de session.** Concrètement, dès qu'une étape du workflow d'authentification (identification, second facteur, réinitialisation, changement de mot de passe) s'appuie sur un paramètre transmis par le navigateur, un en-tête HTTP, ou une variable côté front-end plutôt que sur une vérification effectuée et mémorisée côté serveur, la frontière entre "ce que le client affirme" et "ce que le serveur a réellement vérifié" s'efface. La faille n'est donc généralement pas un défaut de l'algorithme cryptographique lui-même, mais une rupture dans l'enchaînement logique des étapes qui composent le processus d'authentification.
+
+### 2. Vecteurs & Formes d'exploitation
+
+- **Par canal auxiliaire (side-channel)** : l'attaquant n'attaque pas directement le secret, mais observe des différences indirectes (code de statut, message d'erreur, temps de réponse) pour déduire une information sensible, comme l'existence d'un compte.
+- **Par volume / débit (brute force distribué)** : l'attaquant exploite l'absence ou la contournabilité d'une limite de débit pour tester un grand nombre de combinaisons, en dispersant l'effort soit sur les mots de passe, soit sur les comptes ciblés.
+- **Par rupture de séquence (logique de workflow)** : l'attaquant saute ou détourne une étape censée être obligatoire dans un enchaînement multi-étapes, en exploitant le fait que le serveur n'a pas revérifié l'état à chaque point de contrôle.
+- **Par substitution de référence (paramètre d'identité)** : l'attaquant remplace la valeur d'un identifiant censé désigner "sa propre" ressource par celle d'une ressource appartenant à un tiers, profitant de l'absence de recoupement avec l'identité de session.
+- **Par prédictibilité (faiblesse de génération)** : l'attaquant reconstruit ou devine un secret censé être aléatoire (jeton, cookie) parce que sa méthode de génération repose sur des données déductibles ou un encodage réversible plutôt que sur une source d'aléa cryptographique.
+- **Par abus de canal tiers (ingénierie sociale / infrastructure)** : l'attaquant contourne le facteur d'authentification en s'attaquant non pas à l'application, mais au canal de transport du secret (opérateur téléphonique, protocole de signalisation, boîte e-mail).
+
+### 3. Workflow de diagnostic synthétique
+
+1. **Cartographier** l'ensemble des points d'entrée liés à l'identité (login, 2FA, reset, changement de mot de passe, remember-me, SSO tiers).
+2. **Tester l'énumération** pour établir en amont un périmètre de comptes valides.
+3. **Évaluer le débit** : la limitation de tentatives est-elle réelle, par compte ET par IP, et résiste-t-elle aux variantes de format de requête ?
+4. **Auditer chaque enchaînement multi-étapes** (2FA, reset) en se demandant systématiquement : *"Que se passe-t-il si je saute directement à l'étape finale, ou si je rejoue une étape avec un contexte différent ?"*
+5. **Chercher les paramètres d'identité manipulables** sur toute action sensible, en comparant ce que le serveur *devrait* déduire de la session à ce qu'il accepte en pratique du client.
+6. **Évaluer l'entropie et la structure** de tout secret généré côté serveur (token, cookie) avant de conclure à sa robustesse.
+7. **Conclure** en distinguant clairement une faiblesse intrinsèque (mécanisme faible) d'une faille de logique applicative (workflow contournable), car la remédiation diffère.
+
+### 4. Remédiation & Sécurisation
+
+- **Ancrer l'identité côté serveur** : toute action sensible doit dériver l'identité de l'utilisateur exclusivement de l'état de session serveur authentifié, jamais d'un paramètre, en-tête ou champ transmis par le client.
+- **Revalider à chaque étape** : dans tout processus multi-étapes, chaque étape doit revérifier indépendamment les conditions requises (jeton, statut du facteur précédent), sans supposer qu'une vérification antérieure suffit pour la suite.
+- **Uniformiser les réponses observables** : codes de statut, messages d'erreur et temps de traitement doivent être indistinguables entre un cas valide et un cas invalide, pour supprimer les canaux auxiliaires d'information.
+- **Limiter le débit de façon robuste et multi-dimensionnelle** : rate-limiting combiné par identifiant et par origine réseau, avec ralentissement progressif et validation stricte du format des requêtes pour empêcher les contournements structurels.
+- **Générer les secrets par un aléa cryptographique fort** : tout jeton ou cookie sensible doit provenir d'un générateur pseudo-aléatoire cryptographiquement sûr, à haute entropie, sans lien déductible avec des données utilisateur, stocké haché côté serveur, à usage unique et à durée de vie limitée.
+- **Renforcer le second facteur** : privilégier des mécanismes cryptographiques matériels ou applicatifs plutôt que des canaux dépendant d'infrastructures tierces peu fiables, et lier strictement chaque jeton intermédiaire au compte concerné.
+- **Notifier et permettre la révocation** : informer l'utilisateur de tout événement sensible (réinitialisation, changement de mot de passe) et invalider les sessions ou jetons concurrents lors d'un changement d'identifiants.
+- **Documenter la distinction faiblesse intrinsèque / faille de logique** dans tout rapport d'audit, car les deux catégories appellent des corrections différentes (durcissement cryptographique vs. refonte du workflow).
