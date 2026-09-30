@@ -153,8 +153,10 @@ X-CSRF-Token: XYZ789
 
 ### 2.2 Référence exhaustive des en-têtes HTTP
 
-> **Légende des sens** : `REQ` = en-tête de requête (client → serveur) · `RÉP` = en-tête de réponse (serveur → client) · `REQ+RÉP` = utilisable dans les deux sens.
-> **Portée** : cette référence couvre tous les en-têtes normalisés (RFC 9110/9111/9112/9113/9114, RFC 6265bis, RFC 7239, RFC 6454, RFC 6455, RFC 8246, RFC 8297, RFC 8470, RFC 9530…), les spécifications W3C/WHATWG (CSP, CORS, Fetch Metadata, Permissions Policy, Client Hints, Reporting…), les en-têtes *de facto* (`X-*`) et les en-têtes obsolètes encore rencontrés. Le registre IANA évolue : la liste officielle est sur <https://www.iana.org/assignments/http-fields/>.
+- `REQ` = en-tête de requête (client → serveur)
+- `RÉP` = en-tête de réponse (serveur → client)
+- `REQ+RÉP` = utilisable dans les deux sens.
+- La liste officielle est sur <https://www.iana.org/assignments/http-fields/>.
 
 ---
 
