@@ -158,6 +158,473 @@ X-CSRF-Token: XYZ789
 
 ---
 
+#### 2.2.0 Les en-têtes essentiels (accès rapide)
+
+> Sélection des en-têtes les plus importants, regroupés par thème avec leur fiche complète. Les mêmes en-têtes restent décrits à leur place dans la référence exhaustive ci-dessous.
+
+##### Base de la communication Web
+
+* `Host` (`:authority` en H2/H3) : Cible du serveur virtuel (Host Header Injection).
+* `Content-Type` : Format des données envoyées/reçues (`application/json`, `text/html`).
+* `Content-Length` / `Transfer-Encoding` : Taille et découpage du message (Request Smuggling).
+* `Location` : URL cible lors d'une redirection HTTP (Open Redirect).
+
+###### `Host` — REQ
+**Rôle :** indique le nom d'hôte (et le port si non standard) visé par le client. **Obligatoire en HTTP/1.1** ; permet l'*hébergement virtuel* (plusieurs sites sur une même IP).
+
+```http
+GET /index.html HTTP/1.1
+Host: www.example.com:8443
+```
+
+**Traitement serveur :** le serveur (Nginx `server_name`, Apache `ServerName`/`ServerAlias`) compare la valeur à ses hôtes virtuels et sélectionne la configuration correspondante ; sans correspondance, il sert l'hôte « par défaut ». Absent ou en double en HTTP/1.1 → `400 Bad Request`.
+**Sécurité :** s'il est réutilisé sans validation pour générer des liens (mails de réinitialisation de mot de passe, redirections), il permet le *Host Header Injection* / *cache poisoning*. Toujours valider contre une liste blanche.
+
+###### `Content-Type` — REQ+RÉP
+**Rôle :** type MIME du corps + paramètres.
+**Paramètres :** `charset=utf-8` ; `boundary=…` (multipart) ; `version`, `profile`, etc.
+**Valeurs courantes :**
+
+| Valeur | Usage |
+|---|---|
+| `text/html`, `text/plain`, `text/css`, `text/csv`, `text/javascript` | Documents textuels |
+| `application/json`, `application/ld+json`, `application/problem+json` | JSON / JSON-LD / erreurs API (RFC 9457) |
+| `application/xml`, `text/xml`, `application/soap+xml` | XML |
+| `application/x-www-form-urlencoded` | Formulaire HTML classique (`a=1&b=2`) |
+| `multipart/form-data; boundary=----X` | Formulaire avec fichiers |
+| `multipart/byteranges` | Réponses 206 multi-plages |
+| `application/octet-stream` | Binaire générique (téléchargement) |
+| `application/pdf`, `application/zip`, `application/gzip` | Fichiers |
+| `image/png`, `image/jpeg`, `image/webp`, `image/avif`, `image/svg+xml` | Images |
+| `audio/*`, `video/mp4`, `video/webm` | Média |
+| `text/event-stream` | Server-Sent Events |
+| `application/x-ndjson` | Flux JSON ligne par ligne |
+| `application/grpc`, `application/graphql-response+json` | gRPC, GraphQL |
+| `application/wasm` | WebAssembly |
+
+```http
+POST /upload HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxk
+```
+
+**Traitement serveur :** choisit le *parser* du corps (JSON, multipart, urlencoded). Type inconnu → `415 Unsupported Media Type`. **Sécurité :** une divergence entre le type annoncé et le contenu réel permet le *MIME sniffing* → à combiner avec `X-Content-Type-Options: nosniff`.
+
+###### `Content-Length` — REQ+RÉP
+**Rôle :** taille du corps en **octets**.
+
+```http
+Content-Length: 47
+```
+
+**Traitement serveur :** lit exactement N octets. Incohérence avec `Transfer-Encoding` ou entre plusieurs `Content-Length` → **HTTP Request Smuggling** ; les serveurs stricts rejettent (`400`).
+
+###### `Transfer-Encoding` — REQ+RÉP (hop-by-hop)
+**Valeurs :** `chunked` (corps envoyé par morceaux, taille avant chaque morceau, terminé par `0\r\n\r\n`), `gzip`, `deflate`, `compress` (`identity` retiré). **Absent en HTTP/2 et HTTP/3.**
+
+```http
+HTTP/1.1 200 OK
+Transfer-Encoding: chunked
+
+7\r\nMozilla\r\n9\r\nDeveloper\r\n0\r\n\r\n
+```
+
+**Traitement :** le récepteur recompose le corps morceau par morceau. **Sécurité :** conflit `Content-Length` / `Transfer-Encoding` = vecteur de *Request Smuggling* (variantes CL.TE, TE.CL, TE.TE) ; la RFC impose que `Transfer-Encoding` prime et que le serveur refuse ou normalise.
+
+###### `Location` — RÉP
+URL de redirection (`3xx`) ou de la nouvelle ressource (`201 Created`).
+
+```http
+HTTP/1.1 301 Moved Permanently
+Location: https://www.example.com/nouvelle-page
+```
+**Traitement client :** suit la redirection (`301`/`308` permanentes, `302`/`303`/`307` temporaires ; `307`/`308` conservent la méthode). **Sécurité :** ne jamais construire `Location` depuis une entrée utilisateur non validée (*open redirect*, injection CRLF).
+
+---
+
+##### Authentification & Sessions
+
+* `Authorization` : Transmet les jetons d'accès (`Bearer <JWT>`, `Basic <base64>`).
+* `Cookie` / `Set-Cookie` : Gestion des sessions et attributs de sécurité (`HttpOnly`, `Secure`, `SameSite`).
+* `X-API-Key` : Authentification d'API par clé dédiée.
+
+###### `Authorization` — REQ
+**Rôle :** identifiants de l'utilisateur pour la ressource ciblée. Syntaxe : `<schéma> <credentials>`.
+**Schémas possibles :**
+
+| Schéma | Format / fonctionnement |
+|---|---|
+| `Basic` | `base64(user:password)` — **non chiffré**, HTTPS obligatoire |
+| `Bearer` | Jeton opaque ou JWT (OAuth 2.0, RFC 6750) |
+| `Digest` | Hachage challenge-réponse (`username`, `realm`, `nonce`, `uri`, `response`, `qop`, `nc`, `cnonce`, `algorithm`) |
+| `Negotiate` | Kerberos / SPNEGO (Active Directory) |
+| `NTLM` | Protocole Microsoft (obsolète) |
+| `DPoP` | Jeton lié à une clé (`DPoP` proof dans un en-tête séparé) |
+| `AWS4-HMAC-SHA256` | Signature AWS Signature V4 |
+| `SCRAM-SHA-256`, `Mutual`, `HOBA`, `vapid`, `OAuth` (1.0a) | Schémas spécialisés (RFC 7804, 8120, 7486, 8292…) |
+
+```http
+GET /api/me HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Traitement serveur :** extrait le schéma, valide le jeton (signature JWT, expiration `exp`, audience `aud`, scopes) ou le compare à sa base. Échec → `401 Unauthorized` + `WWW-Authenticate` ; authentifié mais non autorisé → `403 Forbidden`.
+
+###### `Cookie` — REQ
+**Rôle :** renvoie au serveur les cookies stockés qui correspondent au domaine, chemin, schéma et politique `SameSite`.
+
+```http
+Cookie: session=abc123def456; csrftoken=XYZ789
+```
+
+**Traitement serveur :** le framework parse les paires `nom=valeur`, retrouve la session (`session` → store Redis/BDD). Un seul en-tête `Cookie` contient tous les cookies séparés par `; `.
+
+###### `Set-Cookie` — RÉP
+**Rôle :** demande au navigateur de stocker un cookie. **Un en-tête `Set-Cookie` par cookie** (jamais fusionnés).
+
+```http
+Set-Cookie: __Host-session=abc123; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=3600
+```
+
+**Attributs et valeurs possibles :**
+
+| Attribut | Valeurs | Effet |
+|---|---|---|
+| `nom=valeur` | chaîne sans espace, `;`, `,` | Contenu du cookie |
+| `Expires` | date HTTP (`Wed, 21 Oct 2026 07:28:00 GMT`) | Date d'expiration absolue |
+| `Max-Age` | entier (secondes) ; `0` ou négatif = **suppression** | Durée de vie relative — **prioritaire sur `Expires`** |
+| *(ni l'un ni l'autre)* | — | Cookie de **session** (supprimé à la fermeture du navigateur) |
+| `Domain` | `example.com` | Cookie envoyé au domaine **et à tous ses sous-domaines**. Omis = hôte exact seulement (plus sûr) |
+| `Path` | `/`, `/app` | Préfixe de chemin pour lequel le cookie est envoyé |
+| `Secure` | *(drapeau)* | Envoyé **uniquement en HTTPS** |
+| `HttpOnly` | *(drapeau)* | **Inaccessible au JavaScript** (`document.cookie`) → limite le vol par XSS |
+| `SameSite` | `Strict`, `Lax`, `None` | Contrôle l'envoi dans les contextes inter-sites (détail ci-dessous) |
+| `Partitioned` | *(drapeau, avec `Secure`)* | Cookie **cloisonné** par site de premier niveau (CHIPS) — utile pour les widgets tiers sans cookie tiers |
+| `Priority` | `Low`, `Medium`, `High` | Priorité d'éviction (Chrome, non standard) |
+
+**Valeurs de `SameSite` :**
+
+| Valeur | Comportement |
+|---|---|
+| `Strict` | Cookie envoyé **uniquement** si la requête vient du même site (*same-site*). Jamais lors d'un clic sur un lien externe → protection CSRF maximale, mais l'utilisateur arrivant depuis un lien externe apparaît « déconnecté » à la 1ʳᵉ page. |
+| `Lax` | Comme `Strict`, **sauf** pour les navigations de haut niveau avec une méthode « sûre » (`GET`) : un lien externe conserve la session. Bloqué pour `POST` cross-site, `iframe`, `fetch`, images. **Valeur par défaut des navigateurs modernes** quand l'attribut est omis. |
+| `None` | Cookie envoyé dans **tous** les contextes (tiers inclus). **Exige `Secure`**. À réserver aux cas d'intégration inter-sites (SSO, widgets, paiement). |
+
+> ⚠️ *Same-site ≠ same-origin.* Le **site** = schéma + domaine enregistrable (eTLD+1) : `app.example.com` et `api.example.com` sont *same-site* mais *cross-origin*.
+
+**Préfixes de nom (contraintes vérifiées par le navigateur) :**
+
+| Préfixe | Contraintes imposées |
+|---|---|
+| `__Secure-` | Doit avoir `Secure` et être posé depuis une page HTTPS |
+| `__Host-` | `Secure` + `Path=/` + **pas de `Domain`** → lié à l'hôte exact, non écrasable par un sous-domaine |
+| `__Http-` | `Secure` + `HttpOnly` (posé côté serveur uniquement) |
+| `__Host-Http-` | Combinaison de `__Host-` et `__Http-` |
+
+**Traitement navigateur/serveur :** le serveur émet, le navigateur valide les attributs et rejette un cookie invalide ; aux requêtes suivantes il applique les règles de portée (domaine, chemin, schéma, SameSite) avant d'ajouter l'en-tête `Cookie`. Suppression : renvoyer le même nom/Domain/Path avec `Max-Age=0`.
+
+###### `X-Api-Key` — REQ *(de facto)*
+Clé d'API statique dans un en-tête personnalisé ; le serveur la retrouve dans sa table de clés et applique quotas/permissions. À traiter comme un secret (jamais dans l'URL).
+
+---
+
+##### Sécurité du navigateur (Réponse)
+
+* `Content-Security-Policy` (CSP) : Restriction des sources d'exécution de scripts (Anti-XSS).
+* `Strict-Transport-Security` (HSTS) : Force les connexions futures en HTTPS.
+* `X-Content-Type-Options` : Positionné à `nosniff` pour empêcher l'interprétation abusive de fichiers.
+* `Referrer-Policy` : Contrôle la fuite d'URL ou de jetons vers des sites tiers.
+* `X-Frame-Options` (ou `frame-ancestors` en CSP) : Protection contre le Clickjacking.
+
+###### `Content-Security-Policy` (CSP) & `Content-Security-Policy-Report-Only` — RÉP
+**Rôle :** liste blanche des sources autorisées → défense principale contre XSS et injections. La variante `Report-Only` **n'applique pas** la politique mais envoie des rapports (phase de test).
+
+**Directives de chargement (fetch directives) :**
+
+| Directive | Contrôle |
+|---|---|
+| `default-src` | Valeur de repli pour toutes les directives `*-src` |
+| `script-src` (`-elem`, `-attr`) | JavaScript (balises / attributs `onclick`) |
+| `style-src` (`-elem`, `-attr`) | CSS (feuilles / attributs `style`) |
+| `img-src` | Images et favicons |
+| `font-src` | Polices |
+| `connect-src` | `fetch`, XHR, WebSocket, EventSource, `sendBeacon` |
+| `media-src` | `<audio>`, `<video>`, `<track>` |
+| `object-src` | `<object>`, `<embed>` (à mettre à `'none'`) |
+| `frame-src` / `child-src` / `worker-src` | Cadres imbriqués / cadres+workers / workers |
+| `manifest-src` | Manifeste d'application web |
+| `prefetch-src` | Préchargement *(dépréciée)* |
+
+**Directives de document et de navigation :**
+
+| Directive | Rôle |
+|---|---|
+| `base-uri` | URLs autorisées pour `<base>` |
+| `form-action` | Cibles autorisées des formulaires |
+| `frame-ancestors` | Qui peut **m'inclure** dans une frame (remplace `X-Frame-Options`) |
+| `sandbox` | Bac à sable (valeurs plus bas) |
+| `upgrade-insecure-requests` | Réécrit `http://` en `https://` pour les sous-ressources |
+| `block-all-mixed-content` | Bloque le contenu mixte *(dépréciée)* |
+| `require-trusted-types-for 'script'` / `trusted-types` | Impose les *Trusted Types* (anti DOM-XSS) |
+| `report-to` / `report-uri` | Destination des rapports (`report-uri` déprécié) |
+
+**Valeurs de sources :**
+
+| Valeur | Signification |
+|---|---|
+| `'none'` | Rien n'est autorisé |
+| `'self'` | Même origine que le document |
+| `https:` / `data:` / `blob:` | Schéma entier |
+| `example.com`, `*.example.com`, `https://cdn.example.com/lib.js` | Hôte, sous-domaines, URL précise |
+| `*` | Tout (sauf `data:`, `blob:`, `filesystem:`) |
+| `'nonce-<base64>'` | Autorise les balises portant ce nonce **à usage unique par réponse** |
+| `'sha256-…'`, `'sha384-…'`, `'sha512-…'` | Autorise un script/style inline selon son hash |
+| `'strict-dynamic'` | Confiance propagée aux scripts chargés par un script déjà de confiance ; ignore les listes d'hôtes |
+| `'unsafe-inline'` | Autorise inline (**affaiblit fortement** la protection) |
+| `'unsafe-eval'` | Autorise `eval()`, `new Function` |
+| `'wasm-unsafe-eval'` | Autorise la compilation WebAssembly |
+| `'unsafe-hashes'` | Autorise des gestionnaires inline via hash |
+| `'report-sample'` | Inclut un extrait du code fautif dans le rapport |
+| `'inline-speculation-rules'` | Autorise les `<script type="speculationrules">` inline |
+
+**Valeurs de `sandbox` :** *(vide = tout restreint)* puis autorisations : `allow-forms`, `allow-modals`, `allow-orientation-lock`, `allow-pointer-lock`, `allow-popups`, `allow-popups-to-escape-sandbox`, `allow-presentation`, `allow-same-origin`, `allow-scripts`, `allow-storage-access-by-user-activation`, `allow-top-navigation`, `allow-top-navigation-by-user-activation`, `allow-top-navigation-to-custom-protocols`, `allow-downloads`.
+
+```http
+Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-r4nd0m' 'strict-dynamic'; img-src 'self' data: https:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; report-to csp-endpoint
+```
+**Traitement :** le serveur génère un **nonce différent à chaque réponse** et l'insère dans l'en-tête et dans `<script nonce="r4nd0m">`. Le navigateur bloque toute ressource/exécution non conforme et envoie un rapport de violation.
+
+###### `Strict-Transport-Security` (HSTS) — RÉP
+**Directives :** `max-age=<s>` (durée pendant laquelle le navigateur force HTTPS) · `includeSubDomains` (s'applique aux sous-domaines) · `preload` (éligible à la liste HSTS préchargée — min. 1 an + `includeSubDomains`).
+
+```http
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+```
+**Traitement navigateur :** convertit d'office toute future requête `http://` en `https://` et refuse de passer outre une erreur de certificat. Ignoré en HTTP simple.
+
+###### `X-Content-Type-Options` — RÉP
+Seule valeur : `nosniff`. Interdit au navigateur de deviner le type MIME (bloque un script servi en `text/plain`, une feuille de style sans `text/css`).
+
+###### `Referrer-Policy` — RÉP
+| Valeur | Ce qui est envoyé dans `Referer` |
+|---|---|
+| `no-referrer` | Jamais |
+| `no-referrer-when-downgrade` | URL complète sauf HTTPS → HTTP |
+| `origin` | Origine seulement (`https://example.com/`) |
+| `origin-when-cross-origin` | URL complète en same-origin, origine seule en cross-origin |
+| `same-origin` | URL complète en same-origin, rien en cross-origin |
+| `strict-origin` | Origine seulement, rien si HTTPS → HTTP |
+| `strict-origin-when-cross-origin` | **Défaut des navigateurs modernes** : complète en same-origin, origine en cross-origin, rien si downgrade |
+| `unsafe-url` | Toujours l'URL complète (**fuites**) |
+
+```http
+Referrer-Policy: strict-origin-when-cross-origin
+```
+
+###### `X-Frame-Options` — RÉP *(remplacé par `frame-ancestors`)*
+| Valeur | Effet |
+|---|---|
+| `DENY` | Jamais affichable dans une frame |
+| `SAMEORIGIN` | Frame autorisée pour la même origine seulement |
+| `ALLOW-FROM uri` | **Obsolète**, ignoré par les navigateurs modernes |
+
+Protège du **clickjacking**.
+
+---
+
+##### Origine, CORS & Contexte
+
+* `Origin` / `Referer` : Provenance de la requête (Anti-CSRF).
+* `Access-Control-Allow-Origin` / `Access-Control-Allow-Credentials` : Règles de partage de ressources (CORS).
+* `Sec-Fetch-Site` / `Sec-Fetch-Mode` / `Sec-Fetch-Dest` : Métadonnées de contexte injectées par le navigateur (Fetch Metadata).
+
+###### `Origin` — REQ
+**Rôle :** indique l'**origine** (`schéma://hôte:port`, sans chemin) qui initie la requête. Envoyé pour les requêtes CORS et les requêtes `POST`/`PUT`/`DELETE` cross-origin.
+
+```http
+POST /api/transfer HTTP/1.1
+Host: bank.example.com
+Origin: https://evil.example.net
+```
+
+**Traitement serveur :** le serveur compare `Origin` à sa liste d'origines autorisées : différente → `403` (défense CSRF) ou absence de header `Access-Control-Allow-Origin` (CORS). Valeur spéciale : `Origin: null` (documents sandboxés, `file://`, redirections cross-origin) → **ne jamais l'autoriser** aveuglément.
+
+###### `Referer` — REQ *(l'orthographe fautive est historique)*
+**Rôle :** URL de la page d'origine d'où provient la requête. Son contenu est contrôlé par `Referrer-Policy` (§ 2.2.13).
+
+```http
+Referer: https://app.example.com/products?id=12
+```
+
+**Traitement serveur :** analytics, contrôle anti-hotlinking (`if ($http_referer !~ "example.com") { return 403; }`), défense CSRF secondaire. **Sécurité :** peut fuiter des tokens contenus dans l'URL ; peut être absent ou masqué → ne pas en dépendre seul.
+
+###### CORS (Cross-Origin Resource Sharing) — `Access-Control-Allow-Origin` / `Access-Control-Allow-Credentials`
+
+*Flux : pour une requête « non simple » (méthode ≠ GET/HEAD/POST, en-têtes personnalisés, `Content-Type: application/json`…), le navigateur envoie d'abord une **requête de pré-vérification** `OPTIONS` (*preflight*).*
+
+```http
+OPTIONS /api/data HTTP/1.1
+Host: api.example.com
+Origin: https://app.example.com
+Access-Control-Request-Method: PUT
+Access-Control-Request-Headers: content-type, x-api-key
+```
+```http
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: https://app.example.com
+Access-Control-Allow-Methods: GET, PUT, DELETE
+Access-Control-Allow-Headers: content-type, x-api-key
+Access-Control-Allow-Credentials: true
+Access-Control-Max-Age: 7200
+Vary: Origin
+```
+
+| En-tête | Sens | Valeurs possibles et traitement |
+|---|---|---|
+| `Access-Control-Request-Method` | REQ | Méthode que la vraie requête utilisera (`PUT`…). Le serveur vérifie qu'elle est autorisée. |
+| `Access-Control-Request-Headers` | REQ | En-têtes personnalisés que la vraie requête enverra. |
+| `Access-Control-Request-Private-Network` | REQ | `true` : accès d'un site public vers un réseau privé (PNA). |
+| `Access-Control-Allow-Origin` | RÉP | `*` (toutes origines, **incompatible avec les credentials**) · une origine précise `https://app.example.com` · `null` (**à éviter**). Un seul nom d'origine autorisé par réponse → on le calcule dynamiquement depuis `Origin` (liste blanche) + `Vary: Origin`. |
+| `Access-Control-Allow-Methods` | RÉP | Liste de méthodes ou `*` (hors credentials). |
+| `Access-Control-Allow-Headers` | RÉP | Liste d'en-têtes de requête autorisés ou `*` (hors credentials ; `Authorization` doit être listé explicitement). |
+| `Access-Control-Allow-Credentials` | RÉP | Seule valeur valide : `true` (autorise cookies/`Authorization` ; interdit d'utiliser `*` ailleurs). |
+| `Access-Control-Expose-Headers` | RÉP | En-têtes de réponse lisibles par le JavaScript (par défaut : seulement `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, `Pragma`). Ex : `X-Total-Count, ETag` ou `*`. |
+| `Access-Control-Max-Age` | RÉP | Durée (s) de mise en cache du preflight ; plafonnée par navigateur (ex. 2 h Chrome, 24 h Firefox). `-1` = désactiver. |
+| `Access-Control-Allow-Private-Network` | RÉP | `true` : autorise l'accès depuis un site public. |
+
+**Sécurité :** ne jamais refléter aveuglément `Origin` avec `Allow-Credentials: true` (équivaut à ouvrir l'API à tout site).
+
+###### `Sec-Fetch-Site` — REQ
+| Valeur | Signification |
+|---|---|
+| `same-origin` | Même schéma, hôte et port |
+| `same-site` | Même site (eTLD+1) mais origine différente |
+| `cross-site` | Site totalement différent |
+| `none` | Action utilisateur directe (barre d'adresse, favori) |
+
+###### `Sec-Fetch-Mode` — REQ
+| Valeur | Signification |
+|---|---|
+| `navigate` | Navigation entre documents |
+| `cors` | Requête CORS (`fetch`, `XHR`) |
+| `no-cors` | Requête sans CORS (`<img>`, `<script src>`…) |
+| `same-origin` | Requête limitée à la même origine |
+| `websocket` | Handshake WebSocket |
+
+###### `Sec-Fetch-Dest` — REQ
+Destination de la ressource : `document`, `iframe`, `frame`, `embed`, `object`, `fencedframe`, `script`, `serviceworker`, `sharedworker`, `worker`, `audioworklet`, `paintworklet`, `style`, `image`, `font`, `audio`, `video`, `track`, `manifest`, `report`, `xslt`, `empty` (`fetch`/XHR).
+
+---
+
+##### Proxies & Infrastructure
+
+* `X-Forwarded-For` (ou `Forwarded`) : Adresse IP d'origine du client (IP Spoofing, Bypass Rate-Limit).
+* `X-Forwarded-Host` / `X-Forwarded-Proto` : Hôte et protocole d'origine vus par le proxy (Cache Poisoning).
+* `X-Original-URL` / `X-Rewrite-URL` : Réécriture d'URL par les proxies (Contournement d'accès 403).
+* `X-CSRF-Token` / `X-Requested-With` : Jetons applicatifs et identification des requêtes AJAX.
+
+###### `X-Forwarded-For` — REQ *(de facto)*
+Liste d'IP : `client, proxy1, proxy2` (chaque proxy ajoute l'IP qu'il voit).
+
+```http
+X-Forwarded-For: 203.0.113.195, 70.41.3.18, 150.172.238.178
+```
+**Traitement :** l'application prend l'IP « de confiance » la plus à droite après avoir retiré ses propres proxys connus (Nginx `real_ip_header X-Forwarded-For; set_real_ip_from …;`). **Ne jamais utiliser la 1ʳᵉ valeur pour un contrôle d'accès ou un rate limiting sans validation** : elle est contrôlée par le client.
+
+###### `Forwarded` — REQ (RFC 7239, standard)
+**Paramètres :** `for=` (client d'origine), `by=` (proxy), `host=` (Host d'origine), `proto=` (`http`/`https`). Les IPv6 sont entre crochets et guillemets.
+
+```http
+Forwarded: for=192.0.2.60;proto=https;by=203.0.113.43, for="[2001:db8:cafe::17]"
+```
+
+###### `X-Forwarded-Host` / `X-Forwarded-Proto` / `X-Forwarded-Port` / `X-Forwarded-Prefix` — REQ
+Hôte, protocole (`http`/`https`), port et préfixe de chemin **d'origine** avant le proxy. `X-Forwarded-Proto: https` sert au back-end à générer des URLs HTTPS et à marquer `Secure` les cookies ; `X-Forwarded-Prefix: /api` indique un préfixe retiré par le proxy.
+
+###### `X-Original-URL` / `X-Rewrite-URL` / `X-Original-Forwarded-For` — REQ
+URL ou IP avant réécriture par IIS/reverse proxy. **Sécurité :** ont été exploités pour contourner des contrôles d'accès — à filtrer côté frontal.
+
+###### `X-Requested-With` — REQ
+Valeur classique : `XMLHttpRequest`. Historiquement utilisé pour distinguer une requête AJAX d'une navigation ; non fiable comme protection CSRF (mais ajoute une barrière car déclenche un *preflight* CORS cross-origin).
+
+###### `X-CSRF-Token` / `X-XSRF-TOKEN` / `X-CSRFToken` — REQ
+Jeton anti-CSRF renvoyé par le JavaScript (lu depuis un cookie `XSRF-TOKEN` ou une balise `<meta>`).
+
+```http
+X-CSRF-Token: XYZ789
+```
+**Traitement :** le serveur compare avec le jeton associé à la session ; différent/absent → `403`.
+
+---
+
+##### Performance & Cache
+
+* `Cache-Control` : Directives de mise en cache (`no-store`, `private`, `max-age`).
+* `Vary` : Critères d'unification ou de séparation des réponses en cache (Web Cache Poisoning).
+* `ETag` / `If-None-Match` : Validation conditionnelle des ressources.
+
+###### `Cache-Control` — REQ+RÉP
+**Rôle :** directives de mise en cache (navigateur, proxys, CDN).
+**Directives de réponse :**
+
+| Directive | Effet |
+|---|---|
+| `max-age=N` | Réponse **fraîche** pendant N secondes |
+| `s-maxage=N` | Idem mais **pour caches partagés** (CDN, proxy) — prioritaire sur `max-age` |
+| `no-cache` | Peut être stockée mais **doit être revalidée** (`If-None-Match`…) avant chaque réutilisation |
+| `no-store` | **Ne rien stocker** nulle part (données sensibles) |
+| `public` | Cachable par tous (même avec `Authorization`) |
+| `private` | Cachable **uniquement** par le navigateur de l'utilisateur, pas par les caches partagés |
+| `must-revalidate` | Une fois périmée, **doit** être revalidée (jamais servie périmée) |
+| `proxy-revalidate` | Comme `must-revalidate`, mais pour caches partagés seulement |
+| `no-transform` | Les intermédiaires ne doivent pas modifier le corps (compression d'images mobiles…) |
+| `immutable` | Ne change jamais tant qu'elle est fraîche → pas de revalidation (fichiers `app.3f9a2.js`) |
+| `stale-while-revalidate=N` | Sert la version périmée **pendant N s** tout en rafraîchissant en arrière-plan |
+| `stale-if-error=N` | Sert la version périmée pendant N s si le serveur d'origine est en erreur |
+| `must-understand` | Ne stocker que si le cache comprend le code de statut ; à combiner avec `no-store` |
+
+**Directives de requête :** `max-age=N` (n'accepte que du contenu plus jeune que N s), `max-stale[=N]` (accepte du périmé), `min-fresh=N` (veut du frais pour au moins N s encore), `no-cache` (force revalidation), `no-store`, `no-transform`, `only-if-cached` (répond depuis le cache seulement, sinon `504`), `stale-if-error`.
+
+```http
+HTTP/1.1 200 OK
+Cache-Control: public, max-age=31536000, immutable
+```
+```http
+Cache-Control: private, no-cache, must-revalidate
+```
+
+**Traitement :** le cache calcule la fraîcheur `age < max-age` ; si périmée, envoie une requête conditionnelle (`If-None-Match`) au serveur, qui répond `304 Not Modified` (sans corps) ou `200` avec la nouvelle version.
+
+###### `Vary` — RÉP
+**Rôle :** liste les en-têtes de **requête** qui ont influencé la réponse ; sert de clé secondaire pour les caches.
+**Valeurs :** noms d'en-têtes (`Accept-Encoding`, `Accept-Language`, `Origin`, `Cookie`, `User-Agent`…) ou `*` (la réponse dépend de facteurs inconnus → **non cachable**).
+
+```http
+Vary: Accept-Encoding, Accept-Language, Origin
+```
+
+**Traitement cache :** stocke une variante distincte par combinaison de valeurs de ces en-têtes. Oublier `Vary: Origin` avec CORS dynamique provoque des erreurs de cache poisoning.
+
+###### `ETag` — RÉP
+**Rôle :** identifiant opaque de la version d'une ressource (hash, numéro de révision).
+**Formes :** `"33a64df5"` (**forte** : identité octet à octet) · `W/"0815"` (**faible** : sémantiquement équivalente).
+
+```http
+ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
+```
+
+###### `If-None-Match` — REQ
+**Rôle :** requête conditionnelle « ne renvoie que si ta version diffère ». Valeur : un ou plusieurs ETag, ou `*`.
+
+```http
+GET /style.css HTTP/1.1
+If-None-Match: "33a64df5", W/"0815"
+```
+
+**Traitement serveur :** compare (comparaison **faible** autorisée pour `GET`/`HEAD`) → identique : `304 Not Modified` ; différent : `200` + corps. Avec `PUT` et `*` : « ne crée que si la ressource n'existe pas » (`412 Precondition Failed` sinon).
+
+---
+
+
 #### 2.2.1 Règles générales de syntaxe
 
 ```text
@@ -1405,7 +1872,6 @@ Set-Cookie: __Host-session=…; Path=/; Secure; HttpOnly; SameSite=Lax
 | Usurpation d'IP | `X-Forwarded-For`, `Forwarded`, `X-Real-IP` | Écrasement par le proxy frontal, liste de proxys de confiance |
 | CORS trop permissif | `Access-Control-Allow-Origin` + `Allow-Credentials` | Liste blanche + `Vary: Origin` |
 | Fuite inter-sites (Spectre, XS-Leaks) | COOP/COEP/CORP, `Sec-Fetch-*` | Isolation cross-origin, *Resource Isolation Policy* |
-
 
 ### 2.3 Verbes HTTP, idempotence et sécurité
 
