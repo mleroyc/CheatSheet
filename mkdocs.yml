@@ -158,6 +158,7 @@ nav:
           - Metasploit Framework: 02-tooling/exploitation/metasploit-framework.md
           - Mimikatz & Kiwi: 02-tooling/exploitation/mimikatz-kiwi.md
           - SQLMap: 02-tooling/exploitation/sqlmap.md
+          - FFUF: 02-tooling/exploitation/ffuf.md
       - Post-Exploitation:
           - Meterpreter: 02-tooling/post-exploitation/meterpreter.md
           - Msfvenom: 02-tooling/post-exploitation/msfvenom.md
