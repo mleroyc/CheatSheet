@@ -223,11 +223,13 @@ nav:
               - Broken Access Control: 05-cours/Red Team/Web/broken-access-control.md
               - Index Web: 05-cours/Red Team/Web/index.md
               - Insecure Password Reset: 05-cours/Red Team/Web/insecure-password-reset.md
-              - LFI / RFI: 05-cours/Red Team/Web/lfi-rfi.md
+              - File inclusion: 05-cours/Red Team/Web/file-inclusion-developed.md
               - Injection SQL (SQLi): 05-cours/Red Team/Web/sqli.md
               - Path Traversal: 05-cours/Red Team/Web/path-traversal.md
               - Command Injection: 05-cours/Red Team/Web/command-injection.md
               - Business Logic Vulnerabilities: 05-cours/Red Team/Web/business-logic-flaws.md
+              - Information Disclosure: 05-cours/Red Team/Web/information-disclosure.md
+              - File Upload : 05-cours/Red Team/Web/file-upload.md
       - Réseaux:
           - Index Réseaux: 05-cours/Réseaux/index.md
           - Bases Réseau & Configuration: 05-cours/Réseaux/reseau-bases-config.md

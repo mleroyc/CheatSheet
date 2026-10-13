@@ -1,29 +1,102 @@
 ---
-title: "IDOR & BOLA - Insecure Direct Object References"
-description: "Analyse approfondie de la vulnérabilité IDOR/BOLA : mécanismes, exploitation web/API, détection et remédiation."
+title: "Broken Access Control — Contrôle d'Accès, IDOR & BOLA"
+description: "Analyse approfondie du contrôle d'accès web : définitions, typologie (vertical/horizontal/contextuel), modèles (DAC/MAC/RBAC/ABAC), vecteurs d'exploitation, focus IDOR/BOLA, détection et remédiation."
 tags:
   - web
   - api
   - idor
   - bola
   - access-control
+  - broken-access-control
   - owasp
   - rbac
   - abac
+  - dac
+  - mac
+  - vertical-access-control
+  - horizontal-access-control
   - graphql
   - jwt
   - http-verb-tampering
   - hpp
 ---
 
-# Broken Access Control — fiche de triche terrain
+# 🛡️ Broken Access Control — fiche de triche terrain
 
 !!! warning "Cadre légal"
     Ces techniques ne doivent être mises en œuvre que dans un cadre légal explicite : laboratoire, CTF, ou test d'intrusion couvert par une autorisation écrite.
 
 ---
 
-## 1. Exploitation IDOR (Insecure Direct Object References)
+## 1. Généralités sur le Contrôle d'Accès
+
+### 1.1 Définition
+
+Le **contrôle d'accès** désigne l'ensemble des **contraintes déterminant qui — ou quoi — est autorisé à effectuer une action ou à accéder à une ressource** donnée dans une application. C'est la fonction de sécurité qui applique concrètement la politique de permissions de l'organisation sur chaque requête traitée.
+
+### 1.2 Les trois piliers fondamentaux des applications web
+
+Le contrôle d'accès ne fonctionne jamais isolément : il s'appuie sur deux mécanismes préalables avec lesquels il est souvent confondu à tort.
+
+| Pilier | Question posée | Rôle |
+|---|---|---|
+| **1. Authentification** | *Qui êtes-vous ?* | Confirme l'identité du sujet (login/mot de passe, MFA, certificat, token). |
+| **2. Gestion de session** | *S'agit-il bien de la même personne à chaque requête ?* | Permet d'identifier, sur la durée, les requêtes successives émises par un même utilisateur authentifié (cookie de session, JWT, etc.). |
+| **3. Contrôle d'accès** | *Cette action est-elle autorisée ?* | Détermine, pour un sujet authentifié et identifié, si l'action demandée sur la ressource ciblée est permise. |
+
+!!! danger "Authentification ≠ Autorisation"
+    Une application peut disposer d'une authentification robuste (MFA, mots de passe forts) tout en étant totalement vulnérable si le **troisième pilier** — le contrôle d'accès proprement dit — est absent ou mal implémenté sur certains endpoints. Les trois piliers doivent être évalués **indépendamment** lors d'un audit.
+
+### 1.3 Criticité
+
+Les failles de **Broken Access Control (BAC)** figurent parmi les vulnérabilités web les **plus répandues** et présentent un **niveau de risque très élevé** : elles occupent la première place du classement **OWASP Top 10** (*A01:2021 — Broken Access Control*) et de l'**OWASP API Security Top 10** (*API1:2023 — Broken Object Level Authorization*). Leur exploitation ne nécessite généralement **aucun outil sophistiqué** : une simple modification de paramètre, d'URL ou d'en-tête HTTP suffit souvent à démontrer l'impact.
+
+---
+
+## 2. Typologie des Contrôles d'Accès
+
+### 2.1 Vertical Access Control
+
+Le contrôle d'accès **vertical** restreint l'accès aux **fonctionnalités sensibles** selon le rôle ou le type de compte (ex : rédacteur vs administrateur, utilisateur standard vs support).
+
+!!! warning "Risque : accès non autorisé à une fonctionnalité d'administration"
+    Un utilisateur standard parvenant à invoquer directement une URL d'administration telle que `/admin/delete-user`, sans jamais disposer du rôle requis, illustre une rupture classique du contrôle d'accès vertical.
+
+### 2.2 Horizontal Access Control
+
+Le contrôle d'accès **horizontal** limite l'accès aux ressources **entre utilisateurs de même niveau de privilège** : il garantit qu'un utilisateur ne peut consulter ou modifier **que ses propres données** (ex : un utilisateur dont l'identifiant est `user_id=101` ne doit jamais pouvoir accéder aux données associées à `user_id=102`).
+
+!!! warning "Risque : IDOR / BOLA"
+    La rupture du contrôle d'accès horizontal est le mécanisme à l'origine des failles **IDOR** (*Insecure Direct Object Reference*) et **BOLA** (*Broken Object Level Access*), détaillées en profondeur en [section 8](#8-focus-approfondi--idor--bola) de cette fiche.
+
+### 2.3 Context-dependent Access Control
+
+Le contrôle d'accès **contextuel** bloque ou autorise une action en fonction de **l'état courant de l'application** ou de **l'étape du workflow** en cours, indépendamment du rôle ou de la propriété de l'objet.
+
+**Exemple :** la modification du contenu d'un panier d'achat doit être **interdite** une fois la commande validée et le paiement initié, même pour le propriétaire légitime du panier.
+
+!!! warning "Risque : Flaws of Sequence (saut d'étapes)"
+    L'absence de vérification de l'état du workflow permet un **saut d'étapes** : un attaquant rejoue ou invoque directement une requête correspondant à une étape avancée du processus (ex : confirmation de commande, déblocage de fonds) sans avoir complété les étapes préalables requises (paiement, validation KYC, etc.).
+
+---
+
+## 3. Modèles de Contrôle d'Accès Sécurisé
+
+Au-delà de la typologie fonctionnelle (vertical/horizontal/contextuel), le contrôle d'accès peut être **implémenté** selon différents modèles architecturaux :
+
+| Modèle | Principe | Cas d'usage typique |
+|---|---|---|
+| **Programmatic Access Control** | Règles de sécurité **codées explicitement** ou **calculées dynamiquement** dans la logique applicative (matrices de privilèges, moteurs de décision croisant rôle, montant de la transaction, statut VIP, état du workflow, etc.) | Logiques métier complexes où une simple association rôle → permission est insuffisante |
+| **Discretionary Access Control (DAC)** | L'accès est laissé à la **discrétion du propriétaire** de l'objet, qui peut lui-même accorder ou révoquer des droits à des tiers | Partage de fichiers (Google Drive, Dropbox), partage de documents collaboratifs |
+| **Mandatory Access Control (MAC)** | Politique **centralisée et stricte**, définie par une autorité ou un administrateur système ; l'utilisateur final ne peut pas la modifier | Niveaux de classification gouvernementaux/militaires (ex : *Secret Défense*), environnements à exigences réglementaires fortes |
+| **Role-based Access Control (RBAC)** | Les **permissions sont associées à des rôles métiers** (ex : « Gestionnaire de stock », « Support niveau 1 »), eux-mêmes attribués aux utilisateurs | Majorité des applications d'entreprise ; granularité suffisante tant que les droits ne dépendent pas de la relation utilisateur ↔ objet précis |
+
+!!! info "RBAC vs ABAC : complémentarité"
+    Le modèle **RBAC** présenté ci-dessus répond bien à la question *« cet utilisateur a-t-il, en général, le droit d'effectuer cette action ? »*. Il atteint cependant ses limites dès qu'il faut répondre à *« cet utilisateur a-t-il le droit sur **cet objet précis** ? »* — question au cœur des failles IDOR/BOLA. Le modèle **ABAC** (*Attribute-Based Access Control*), qui combine plusieurs attributs (rôle **et** propriétaire **et** tenant **et** état de l'objet), est alors nécessaire. Voir la comparaison détaillée RBAC vs ABAC en [section 8.5](#85-remédiation--hardening-perspective-blue-team).
+
+---
+
+## 4. Exploitation IDOR (Insecure Direct Object References)
 
 | Type | Principe | Exemple |
 |---|---|---|
@@ -60,9 +133,54 @@ done
 
 ---
 
-## 2. Élévation de privilèges horizontale & verticale
+## 5. Élévation de privilèges horizontale & verticale
 
-### Manipulation du corps de requête
+### 5.1 Escalade de privilèges verticale — vecteurs complémentaires
+
+Au-delà de la manipulation directe du corps de requête, des en-têtes et du JWT (sous-sections suivantes), l'escalade **verticale** s'appuie fréquemment sur les vecteurs suivants :
+
+**Fonctionnalités non protégées (liens cachés)**
+
+Certaines fonctionnalités sensibles sont simplement **absentes du menu de navigation** ou de l'interface visible pour un utilisateur standard, sans pour autant être protégées côté backend. Elles sont découvertes par :
+
+- Exploration de `robots.txt` (chemins explicitement exclus de l'indexation, donc potentiellement sensibles).
+- *Discover Content* de Burp Suite (brute-force de répertoires et de fichiers).
+
+!!! warning "L'obscurité n'est pas de la sécurité (*security through obscurity*)"
+    Des URLs volontairement complexes ou peu intuitives (ex : `/administrator-panel-yb556`) ne constituent **jamais** une protection valable. Ces chemins sont très souvent **divulgués malgré eux** par le code front-end (fichiers JavaScript, bundles webpack) ou retrouvés via l'outil *Find comments* de Burp Suite dans des commentaires de développement oubliés.
+
+**Contrôles basés sur les paramètres**
+
+Certaines applications accordent une **confiance aveugle** à une donnée entièrement contrôlable côté client pour déterminer le niveau de privilège de la requête :
+
+```http
+GET /account/settings?admin=true HTTP/1.1
+Host: cible.com
+Cookie: session=user_1001_session_token
+```
+
+```http
+GET /account/settings HTTP/1.1
+Host: cible.com
+Cookie: session=user_1001_session_token; role=admin
+```
+
+Qu'il s'agisse d'un paramètre d'URL, d'un champ de formulaire caché (`<input type="hidden" name="isAdmin" value="false">`) ou d'un cookie, **aucune de ces valeurs ne doit jamais faire foi** sans revérification côté serveur à partir du contexte de session authentifié.
+
+**Divergence de correspondance d'URL (*URL matching discrepancy*)**
+
+Lorsque la couche qui applique le contrôle d'accès (middleware, reverse-proxy, WAF) et la couche qui route réellement la requête (routeur applicatif) ne normalisent pas les URLs de façon identique, un écart de correspondance peut être exploité pour contourner la règle de sécurité :
+
+| Divergence | Exemple | Explication |
+|---|---|---|
+| **Incohérence de casse** | `/ADMIN/DELETEUSER` vs `/admin/deleteUser` | Un filtre sensible à la casse laisse passer une variante en majuscules que le routeur applicatif, lui, traite de façon insensible à la casse |
+| **Extension de suffixe** | `/admin/deleteUser.json`, `/admin/deleteUser;.css` | Historiquement exploitable sur Spring Framework (< 5.3) avec `useSuffixPatternMatch` activé : le framework ignore le suffixe pour le routage mais le filtre de sécurité ne reconnaît pas la variante suffixée |
+| **Slash de fin (*trailing slash*)** | `/admin/deleteUser` protégé par la règle de sécurité, mais `/admin/deleteUser/` reste accessible | Le filtre ne couvre que la forme exacte sans slash final, alors que le routeur applicatif traite les deux formes comme équivalentes |
+
+!!! tip "Tester systématiquement les variantes de chemin"
+    Pour toute route sensible identifiée, tester : variation de casse, ajout d'un slash final, ajout d'une extension de fichier factice (`.json`, `.css`, `;.css`), encodage URL des séparateurs. Voir également la [section 7](#7-bypass-de-contrôle-daccès-par-réécriture-durl) pour les techniques de traversée de chemin plus poussées (point-virgule matrix, double encodage).
+
+### 5.2 Manipulation du corps de requête
 
 ```json
 // Requête légitime d'inscription
@@ -77,7 +195,7 @@ done
 !!! warning "Mass assignment"
     Si le backend associe automatiquement chaque champ JSON reçu à un attribut du modèle utilisateur sans liste blanche explicite, un champ absent du formulaire visible peut néanmoins être accepté et traité par l'API.
 
-### Manipulation d'en-têtes ou cookies
+### 5.3 Manipulation d'en-têtes ou cookies
 
 ```bash
 curl -H "X-User-Role: admin" https://cible.com/api/dashboard
@@ -87,7 +205,7 @@ curl -H "Cookie: role=admin; session=abc123" https://cible.com/api/dashboard
 # Teste un cookie de rôle manipulable côté client
 ```
 
-### Manipulation de JWT
+### 5.4 Manipulation de JWT
 
 ```text
 Header : { "alg": "HS256", "typ": "JWT" }
@@ -108,9 +226,69 @@ echo '{"user":"test","role":"admin"}' | base64 -w0
 !!! tip "Décoder rapidement un JWT"
     `echo "<partie_payload>" | base64 -d` (ajouter le padding `=` manquant si nécessaire) révèle directement le contenu du payload sans outil dédié.
 
+### 5.5 De l'horizontale vers la verticale
+
+Une faille apparemment **horizontale** peut, par simple opportunité, se transformer en escalade **verticale** si l'identifiant manipulé correspond par hasard — ou après énumération — au compte d'un **administrateur**.
+
+```http
+GET /myaccount?id=123 HTTP/1.1
+Host: cible.com
+Cookie: session=user_1001_session_token
+```
+
+```http
+GET /myaccount?id=465 HTTP/1.1
+Host: cible.com
+Cookie: session=user_1001_session_token
+```
+
+!!! danger "Pivot horizontal → vertical"
+    Si l'identifiant `465` correspond au compte d'un administrateur, l'attaquant obtient alors, via une simple faille horizontale (IDOR), un accès direct aux **privilèges administrateur** du compte ciblé — y compris, selon le endpoint, la possibilité de modifier son mot de passe ou son adresse e-mail. Lors de toute campagne d'énumération d'IDOR, il est donc indispensable de **croiser les identifiants découverts avec les comptes à privilèges connus** (admin, support, finance) plutôt que de se limiter à des comptes de test standards.
+
+### 5.6 Processus séquentiels & en-têtes de confiance erronée
+
+**Omission de vérification à l'étape finale d'un workflow multi-étapes**
+
+Dans un processus comportant plusieurs étapes (ex : création de compte → vérification d'identité → validation → activation), le contrôle d'autorisation est parfois appliqué uniquement sur les **premières étapes** et **omis sur l'étape finale**, qui exécute pourtant l'action réellement sensible (activation du compte, déblocage de fonds, publication).
+
+```http
+POST /workflow/step4/activate HTTP/1.1
+Host: cible.com
+Cookie: session=user_1001_session_token
+
+{ "application_id": 9981 }
+```
+
+!!! warning "Rejouer directement la dernière étape"
+    Un attaquant qui identifie l'endpoint de l'étape finale peut tenter de l'invoquer **directement**, sans avoir complété les étapes précédentes requises, si le serveur ne revérifie pas que les étapes antérieures ont bien été validées pour cette session/cet objet précis.
+
+**Contrôle d'accès basé sur l'en-tête `Referer`**
+
+```http
+GET /admin/panel HTTP/1.1
+Host: cible.com
+Referer: https://cible.com/admin/menu
+Cookie: session=user_1001_session_token
+```
+
+!!! danger "Le `Referer` est entièrement contrôlé par le client"
+    Certaines implémentations défaillantes autorisent l'accès à une ressource sensible dès lors que l'en-tête `Referer` pointe vers une page interne légitime (ex : le menu d'administration), en considérant implicitement que l'utilisateur « est passé par là ». Cet en-tête étant **librement falsifiable** par le client (voire absent selon la politique `Referrer-Policy` du navigateur), il ne doit **jamais** servir de fondement à une décision d'autorisation.
+
+**Contrôle d'accès basé sur la géolocalisation**
+
+Certaines restrictions fonctionnelles ou réglementaires reposent sur la localisation apparente de l'utilisateur, déduite de son adresse IP ou d'un en-tête tel que `X-Forwarded-For`.
+
+```bash
+curl -H "X-Forwarded-For: 203.0.113.42" https://cible.com/api/region-locked-feature
+# Falsification de l'en-tête pour simuler une provenance géographique différente
+```
+
+!!! warning "Contournement trivial"
+    Un contrôle géographique reposant uniquement sur l'adresse IP source (ou pire, sur un en-tête `X-Forwarded-For` non validé) se contourne via un VPN, un proxy, ou une simple falsification de l'en-tête. La géolocalisation ne constitue **jamais**, à elle seule, un mécanisme de contrôle d'accès fiable et doit, le cas échéant, être combinée à d'autres facteurs d'authentification/autorisation robustes.
+
 ---
 
-## 3. Contournement de verbes et méthodes HTTP
+## 6. Contournement de verbes et méthodes HTTP
 
 ```bash
 curl -X GET https://cible.com/admin/users/1/delete       # Bloqué (403) sur la méthode attendue
@@ -136,7 +314,7 @@ curl -X POST -H "X-HTTP-Method-Override: DELETE" https://cible.com/admin/users/1
 
 ---
 
-## 4. Bypass de contrôle d'accès par réécriture d'URL
+## 7. Bypass de contrôle d'accès par réécriture d'URL
 
 ### En-têtes de proxying
 
@@ -174,9 +352,9 @@ curl https://cible.com/admin%2f..%2fdashboard
 
 ---
 
-## 5. Focus approfondi — IDOR / BOLA
+## 8. Focus approfondi — IDOR / BOLA
 
-### 5.1 Résumé exécutif & contexte
+### 8.1 Résumé exécutif & contexte
 
 **IDOR** (*Insecure Direct Object Reference*) et **BOLA** (*Broken Object Level Authorization*) désignent la même famille de défaut : une application expose une référence directe vers un objet interne (ligne de base de données, fichier, ressource) et **traite une requête sur cet objet sans revérifier que l'utilisateur authentifié en est le propriétaire ou dispose des droits requis**.
 
@@ -201,7 +379,7 @@ curl https://cible.com/admin%2f..%2fdashboard
 
 ---
 
-### 5.2 Mécanisme & fonctionnement interne
+### 8.2 Mécanisme & fonctionnement interne
 
 Le défaut se situe presque toujours dans la couche de traitement de la requête, **après** l'authentification et **avant** ou **pendant** l'accès aux données :
 
@@ -241,7 +419,7 @@ La simple présence d'une clause `WHERE id = :id` sans filtre de propriétaire s
 
 ---
 
-### 5.3 Empreinte & détection
+### 8.3 Empreinte & détection
 
 #### Reconnaissance et cartographie des paramètres sensibles
 
@@ -287,7 +465,7 @@ Le code de statut retourné distingue souvent un IDOR/BOLA "visible" d'un IDOR/B
 
 ---
 
-### 5.4 Méthodologie d'exploitation & variantes
+### 8.4 Méthodologie d'exploitation & variantes
 
 #### Variante 1 : IDOR classique par manipulation de paramètres d'URL (GET)
 
@@ -446,7 +624,7 @@ Si `invoice_id=9981` appartient à `user_1002`, mais que le endpoint de téléch
 
 ---
 
-### 5.5 Remédiation & hardening (perspective Blue Team)
+### 8.5 Remédiation & hardening (perspective Blue Team)
 
 !!! danger "Principe fondamental"
     **Chaque accès à un objet doit revalider explicitement, côté serveur, que le sujet authentifié (`current_user`) est autorisé à effectuer l'action demandée sur cet objet précis** — à chaque requête, sans exception, y compris pour les appels inter-services internes.
@@ -540,7 +718,39 @@ if ($document === false) {
 **Bonnes pratiques complémentaires :**
 
 - Centraliser la logique d'autorisation dans une couche unique (middleware, décorateur, policy engine type OPA/Casbin) plutôt que de la dupliquer route par route — la duplication est la première cause d'oubli.
-- Pour les architectures multi-tenant, inclure systématiquement `tenant_id` dans **chaque** clause de filtrage, y compris les jointures indirectes (cas de l'IDOR de second ordre, section 5.4).
+- Pour les architectures multi-tenant, inclure systématiquement `tenant_id` dans **chaque** clause de filtrage, y compris les jointures indirectes (cas de l'IDOR de second ordre, section 8.4).
 - En environnement microservices, ne jamais faire confiance à un `user_id`/`tenant_id` transmis par un service appelant sans re-signature ou re-vérification cryptographique du contexte (éviter le pattern *confused deputy*).
 - Pour GraphQL, appliquer le contrôle d'autorisation **au niveau du resolver**, pas uniquement au niveau du endpoint HTTP, afin de couvrir tous les chemins de requête possibles vers un même champ.
 - Journaliser et alerter sur les patterns d'énumération (accès séquentiels rapides à des `id` consécutifs par un même compte) pour détecter une exploitation active avant l'exfiltration complète.
+
+---
+
+## 9. Mesures de Protection & Bonnes Pratiques (principes transverses)
+
+Au-delà des correctifs techniques détaillés en [section 8.5](#85-remédiation--hardening-perspective-blue-team) pour IDOR/BOLA, cinq principes directeurs s'appliquent à **l'ensemble** des failles de contrôle d'accès présentées dans cette fiche (vertical, horizontal, contextuel) :
+
+!!! danger "Deny by Default"
+    Appliquer **systématiquement** le principe du **refus par défaut** pour toute ressource ou fonctionnalité : une route, un champ ou une action ne doit être accessible qu'après une **autorisation explicite**, jamais par omission d'une règle de blocage. Toute nouvelle route créée sans politique de sécurité associée doit être considérée comme **non autorisée** tant qu'elle n'a pas été explicitement couverte.
+
+!!! warning "Bannir l'obscurité comme mécanisme de sécurité"
+    Ne **jamais** compter sur le masquage d'une URL, l'absence de lien dans l'interface utilisateur, ou la complexité apparente d'un chemin pour protéger une ressource (cf. [section 5.1](#51-escalade-de-privilèges-verticale--vecteurs-complémentaires)). L'API ou le contrôleur backend doit **valider implacablement les droits** à chaque requête, indépendamment de la façon dont le client a découvert l'URL.
+
+!!! tip "Centraliser la sécurité"
+    Utiliser un **mécanisme unique et transversal** (middleware, filtre, policy engine) pour gérer l'ensemble des contrôles d'accès, plutôt que de réimplémenter la logique d'autorisation route par route ou service par service. La duplication de la logique de sécurité est la cause la plus fréquente d'oubli constaté en audit (cf. recommandation équivalente en [section 8.5](#85-remédiation--hardening-perspective-blue-team) pour les architectures microservices).
+
+!!! tip "Déclarations explicites de permissions"
+    Exiger, au niveau du code ou de la configuration, que **chaque route/endpoint** associe **explicitement** une politique de sécurité (rôle requis, règle ABAC, scope OAuth, etc.). L'absence de déclaration doit déclencher une erreur de configuration ou un refus par défaut (cf. *Deny by Default* ci-dessus), jamais un accès silencieusement autorisé.
+
+!!! info "Audits continus"
+    Mettre en place des **tests de non-régression automatisés** ciblant spécifiquement le contrôle d'accès (matrice rôle × endpoint testée en CI/CD) ainsi que des **revues de code ciblées** sur toute modification touchant à l'authentification, à la gestion de session ou aux autorisations. Un contrôle d'accès correctement implémenté à un instant T peut être silencieusement cassé par une modification ultérieure non revue sous cet angle.
+
+### Synthèse — checklist d'audit du contrôle d'accès
+
+- [ ] Les trois piliers (authentification, session, autorisation) sont-ils testés **séparément** ?
+- [ ] Chaque fonctionnalité sensible est-elle protégée **côté serveur**, indépendamment de sa visibilité dans l'IHM ?
+- [ ] Les contrôles verticaux sont-ils appliqués sur **toutes** les méthodes HTTP et variantes de casse/chemin d'une route protégée ?
+- [ ] Les contrôles horizontaux vérifient-ils la **propriété réelle** de l'objet (et non la simple existence de l'identifiant) ?
+- [ ] Les règles contextuelles (étapes de workflow) sont-elles revalidées à **chaque** étape, y compris la dernière ?
+- [ ] Aucune décision d'autorisation ne repose sur une donnée **contrôlable par le client** (paramètre, cookie, `Referer`, en-tête de géolocalisation) ?
+- [ ] La logique d'autorisation est-elle **centralisée** plutôt que dupliquée ?
+- [ ] Des tests de non-régression couvrent-ils la matrice rôle × endpoint en CI/CD ?
