@@ -230,6 +230,7 @@ nav:
               - Business Logic Vulnerabilities: 05-cours/Red Team/Web/business-logic-flaws.md
               - Information Disclosure: 05-cours/Red Team/Web/information-disclosure.md
               - File Upload : 05-cours/Red Team/Web/file-upload.md
+              - Server Side Request Forgery : 05-cours/Red Team/Web/ssrf.md
       - Réseaux:
           - Index Réseaux: 05-cours/Réseaux/index.md
           - Bases Réseau & Configuration: 05-cours/Réseaux/reseau-bases-config.md
