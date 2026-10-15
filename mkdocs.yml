@@ -231,6 +231,8 @@ nav:
               - Information Disclosure: 05-cours/Red Team/Web/information-disclosure.md
               - File Upload : 05-cours/Red Team/Web/file-upload.md
               - Server Side Request Forgery : 05-cours/Red Team/Web/ssrf.md
+              - Race conditions : 05-cours/Red Team/Web/race-conditions.md
+              - API Testing : 05-cours/Red Team/Web/api-testing.md
       - Réseaux:
           - Index Réseaux: 05-cours/Réseaux/index.md
           - Bases Réseau & Configuration: 05-cours/Réseaux/reseau-bases-config.md
@@ -250,3 +252,7 @@ nav:
           - Index Windows: 05-cours/Windows/index.md
           - CMD Windows: 05-cours/Windows/cmd-windows.md
           - PowerShell Basics: 05-cours/Windows/powershell-basics.md
+
+  - 📖 06 - Flashcards:
+      - Web: 
+          - SQLi: 06-flashcards/web/sqli.md
