@@ -1,3 +1,72 @@
+site_name: CheatSheet
+site_description: Aide-mémoire de cybersécurité offensive & défensive
+site_author: Votre Nom
+
+theme:
+  name: material
+  language: fr
+  palette:
+    - scheme: default
+      primary: white
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Passer en mode sombre
+    - scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Passer en mode clair
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top          # Bouton "back to top"
+    - navigation.indexes
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - content.code.copy       # Bouton copier le code
+    - content.code.annotate
+    - content.tabs.link
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition               # !!! note, !!! warning, etc.
+  - pymdownx.details
+  - pymdownx.superfences     # Blocs de code avancés (imbrication, mermaid...)
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.tasklist:       # Checklists
+      custom_checkbox: true
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search:
+      lang: fr
+  - tags:
+      tags_file: tags.md
+  - minify:
+      minify_html: true
+
 nav:
   - 🧱 01 - Fondamentaux:
       - Linux:
@@ -74,8 +143,10 @@ nav:
               - Ss: 01-fundamentals/reseau/cli-reseau/ss.md
               - Ssh: 01-fundamentals/reseau/cli-reseau/ssh.md
               - Tcpdump: 01-fundamentals/reseau/cli-reseau/tcpdump.md
+              - Telnet: 01-fundamentals/reseau/cli-reseau/telnet.md
               - Traceroute & Mtr: 01-fundamentals/reseau/cli-reseau/traceroute-mtr.md
               - Wget: 01-fundamentals/reseau/cli-reseau/wget.md
+              - Whois & RDAP: 01-fundamentals/reseau/cli-reseau/whois-rdap.md
 
   - 🛠️ 02 - Outils de Sécurité:
       - Analyse Réseau:
@@ -87,6 +158,7 @@ nav:
           - Metasploit Framework: 02-tooling/exploitation/metasploit-framework.md
           - Mimikatz & Kiwi: 02-tooling/exploitation/mimikatz-kiwi.md
           - SQLMap: 02-tooling/exploitation/sqlmap.md
+          - FFUF: 02-tooling/exploitation/ffuf.md
       - Post-Exploitation:
           - Meterpreter: 02-tooling/post-exploitation/meterpreter.md
           - Msfvenom: 02-tooling/post-exploitation/msfvenom.md
@@ -101,20 +173,19 @@ nav:
       - CVE & Exploits:
           - CVE-2024-21413: 03-vulnerabilities-attacks/cve-exploits/cve-2024-21413.md
       - Méthodologie:
-          - Reconnaissance: 03-vulnerabilities-attacks/methodologie/Reconnaissance/index.md
+          - Exploitation:
+              - Password Attacks Methodology: 03-vulnerabilities-attacks/methodologie/Exploitation/password-attacks-methodology.md
+          - Reconnaissance:
+              - Recon Active & Passive: 03-vulnerabilities-attacks/methodologie/Reconnaissance/recon-active-passive.md
       - Réseau:
-          - ARP Spoofing & MitM: 03-vulnerabilities-attacks/network/arp-spoofing-et-mitm.md
+          - Network Sniffing & MitM Techniques: 03-vulnerabilities-attacks/network/network-sniffing-mitm-techniques.md
+          - SSL Stripping & Downgrade Attacks: 03-vulnerabilities-attacks/network/ssl-stripping-downgrade-attacks.md
       - Système & PrivEsc:
           - Shell Escape: 03-vulnerabilities-attacks/system-privesc/shell-escape.md
       - Web:
-          - Alternative Extensions Bypass: 03-vulnerabilities-attacks/web/alternative-extensions-bypass.md
           - Authentication Failures: 03-vulnerabilities-attacks/web/authentication-failures.md
-          - Broken Access Control: 03-vulnerabilities-attacks/web/broken-access-control.md
-          - Insecure Password Reset: 03-vulnerabilities-attacks/web/insecure-password-reset.md
-          - LFI / RFI: 03-vulnerabilities-attacks/web/lfi-rfi.md
-          - SQL Injection: 03-vulnerabilities-attacks/web/sqli.md
+          - SQL Injection (Cheat Sheet): 03-vulnerabilities-attacks/web/sqli-cheat-sheet.md
           - Web Shells: 03-vulnerabilities-attacks/web/web-shells.md
-          - XSS: 03-vulnerabilities-attacks/web/xss.md
 
   - 📝 04 - Write-ups & Labs:
       - Hack The Box:
@@ -147,16 +218,43 @@ nav:
       - Red Team:
           - OWASP Top 10 Cheatsheet: 05-cours/Red Team/owasp-top10-cheatsheet.md
           - Web:
+              - Alternative Extensions Bypass: 05-cours/Red Team/Web/alternative-extensions-bypass.md
+              - Authentification & Vulnérabilités: 05-cours/Red Team/Web/authentification-vulnérabilites.md
+              - Broken Access Control: 05-cours/Red Team/Web/broken-access-control.md
               - Index Web: 05-cours/Red Team/Web/index.md
+              - Insecure Password Reset: 05-cours/Red Team/Web/insecure-password-reset.md
+              - File inclusion: 05-cours/Red Team/Web/file-inclusion-developed.md
+              - Injection SQL (SQLi): 05-cours/Red Team/Web/sqli.md
+              - Path Traversal: 05-cours/Red Team/Web/path-traversal.md
+              - Command Injection: 05-cours/Red Team/Web/command-injection.md
+              - Business Logic Vulnerabilities: 05-cours/Red Team/Web/business-logic-flaws.md
+              - Information Disclosure: 05-cours/Red Team/Web/information-disclosure.md
+              - File Upload : 05-cours/Red Team/Web/file-upload.md
+              - Server Side Request Forgery : 05-cours/Red Team/Web/ssrf.md
+              - Race conditions : 05-cours/Red Team/Web/race-conditions.md
+              - API Testing : 05-cours/Red Team/Web/api-testing.md
       - Réseaux:
           - Index Réseaux: 05-cours/Réseaux/index.md
           - Bases Réseau & Configuration: 05-cours/Réseaux/reseau-bases-config.md
           - Routage & Subnetting: 05-cours/Réseaux/routage-subnetting.md
           - Protocoles:
-              - Protocole DNS: 05-cours/Réseaux/protocoles/dns-protocole.md
-              - Protocole FTP: 05-cours/Réseaux/protocoles/ftp-protocole.md
-              - Partage & Fichiers: 05-cours/Réseaux/protocoles/partage-et-fichiers.md
+              - ARP: 05-cours/Réseaux/protocoles/arp.md
+              - DNS: 05-cours/Réseaux/protocoles/dns.md
+              - FTP, FTPS & SFTP: 05-cours/Réseaux/protocoles/ftp-ftps-sftp.md
+              - HTTP & HTTPS: 05-cours/Réseaux/protocoles/http-https.md
+              - IMAP & IMAPS: 05-cours/Réseaux/protocoles/imap-imaps.md
+              - NFS & SMB: 05-cours/Réseaux/protocoles/nfs-smb.md
+              - POP3 & POP3S: 05-cours/Réseaux/protocoles/pop3-pop3s.md
+              - SMTP & SMTPS: 05-cours/Réseaux/protocoles/smtp-smtps.md
+              - SSL & TLS: 05-cours/Réseaux/protocoles/ssl-tls.md
+              - Telnet: 05-cours/Réseaux/protocoles/telnet.md
       - Windows:
           - Index Windows: 05-cours/Windows/index.md
           - CMD Windows: 05-cours/Windows/cmd-windows.md
           - PowerShell Basics: 05-cours/Windows/powershell-basics.md
+
+  - 📖 06 - Flashcards:
+      - Web: 
+          - SQLi: 06-flashcards/web/sqli.md
+          - Access Control: 06-flashcards/web/access-control.md
+
