@@ -69,134 +69,38 @@ plugins:
 
 nav:
   - "Accueil": "index.md"
-  - "Parcours et progression":
-      - "Vue d’ensemble": "00-parcours/index.md"
-      - "Roadmap": "00-parcours/roadmap.md"
-      - "Matrice de compétences": "00-parcours/matrice-competences.md"
-      - "Planning des révisions": "00-parcours/planning-revisions.md"
+
   - "Vulnérabilités et attaques":
-      - "Vue d’ensemble": "01-vulnerabilites/index.md"
       - "Web":
-          - "Vue d’ensemble": "01-vulnerabilites/web/index.md"
-          - "Server-side":
-              - "Vue d’ensemble": "01-vulnerabilites/web/server-side/index.md"
-              - "SQL Injection":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/server-side/sqli/index.md"
-                  - "Cours": "01-vulnerabilites/web/server-side/sqli/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/server-side/sqli/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/server-side/sqli/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/server-side/sqli/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/server-side/sqli/labs.md"
-              - "SSRF":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/server-side/ssrf/index.md"
-                  - "Cours": "01-vulnerabilites/web/server-side/ssrf/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/server-side/ssrf/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/server-side/ssrf/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/server-side/ssrf/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/server-side/ssrf/labs.md"
-              - "Command Injection":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/server-side/command-injection/index.md"
-                  - "Cours": "01-vulnerabilites/web/server-side/command-injection/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/server-side/command-injection/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/server-side/command-injection/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/server-side/command-injection/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/server-side/command-injection/labs.md"
-              - "File Inclusion":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/server-side/file-inclusion/index.md"
-                  - "Cours": "01-vulnerabilites/web/server-side/file-inclusion/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/server-side/file-inclusion/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/server-side/file-inclusion/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/server-side/file-inclusion/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/server-side/file-inclusion/labs.md"
-              - "Path Traversal":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/server-side/path-traversal/index.md"
-                  - "Cours": "01-vulnerabilites/web/server-side/path-traversal/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/server-side/path-traversal/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/server-side/path-traversal/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/server-side/path-traversal/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/server-side/path-traversal/labs.md"
-              - "File Upload":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/server-side/file-upload/index.md"
-                  - "Cours": "01-vulnerabilites/web/server-side/file-upload/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/server-side/file-upload/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/server-side/file-upload/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/server-side/file-upload/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/server-side/file-upload/labs.md"
-                  - "Variantes":
-                      - "Index": "01-vulnerabilites/web/server-side/file-upload/variantes/index.md"
-                      - "Alternative extensions bypass": "01-vulnerabilites/web/server-side/file-upload/variantes/alternative-extensions-bypass.md"
-              - "Race Conditions":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/server-side/race-conditions/index.md"
-                  - "Cours": "01-vulnerabilites/web/server-side/race-conditions/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/server-side/race-conditions/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/server-side/race-conditions/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/server-side/race-conditions/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/server-side/race-conditions/labs.md"
-              - "Information Disclosure":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/server-side/information-disclosure/index.md"
-                  - "Cours": "01-vulnerabilites/web/server-side/information-disclosure/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/server-side/information-disclosure/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/server-side/information-disclosure/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/server-side/information-disclosure/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/server-side/information-disclosure/labs.md"
           - "Authentification et contrôle d’accès":
-              - "Vue d’ensemble": "01-vulnerabilites/web/auth-controle-acces/index.md"
-              - "Authentication Failures":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/auth-controle-acces/authentication-failures/index.md"
-                  - "Cours": "01-vulnerabilites/web/auth-controle-acces/authentication-failures/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/auth-controle-acces/authentication-failures/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/auth-controle-acces/authentication-failures/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/auth-controle-acces/authentication-failures/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/auth-controle-acces/authentication-failures/labs.md"
-              - "Broken Access Control":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/auth-controle-acces/broken-access-control/index.md"
-                  - "Cours": "01-vulnerabilites/web/auth-controle-acces/broken-access-control/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/auth-controle-acces/broken-access-control/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/auth-controle-acces/broken-access-control/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/auth-controle-acces/broken-access-control/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/auth-controle-acces/broken-access-control/labs.md"
-              - "Insecure Password Reset":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/auth-controle-acces/insecure-password-reset/index.md"
-                  - "Cours": "01-vulnerabilites/web/auth-controle-acces/insecure-password-reset/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/auth-controle-acces/insecure-password-reset/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/auth-controle-acces/insecure-password-reset/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/auth-controle-acces/insecure-password-reset/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/auth-controle-acces/insecure-password-reset/labs.md"
+              - "Authentication Failures": "01-vulnerabilites/web/auth-controle-acces/authentication-failures/cours.md"
+              - "Broken Access Control": "01-vulnerabilites/web/auth-controle-acces/broken-access-control/cours.md"
+              - "Insecure Password Reset": "01-vulnerabilites/web/auth-controle-acces/insecure-password-reset/cours.md"
           - "Logique métier":
-              - "Vue d’ensemble": "01-vulnerabilites/web/logique-metier/index.md"
-              - "Business Logic Flaws":
-                  - "Vue d’ensemble": "01-vulnerabilites/web/logique-metier/business-logic-flaws/index.md"
-                  - "Cours": "01-vulnerabilites/web/logique-metier/business-logic-flaws/cours.md"
-                  - "Exploitation": "01-vulnerabilites/web/logique-metier/business-logic-flaws/exploitation.md"
-                  - "CheatSheet": "01-vulnerabilites/web/logique-metier/business-logic-flaws/cheatsheet.md"
-                  - "Révision": "01-vulnerabilites/web/logique-metier/business-logic-flaws/revision.md"
-                  - "Labs associés": "01-vulnerabilites/web/logique-metier/business-logic-flaws/labs.md"
+              - "Business Logic Flaws": "01-vulnerabilites/web/logique-metier/business-logic-flaws/cours.md"
+          - "Server-side":
+              - "Command Injection": "01-vulnerabilites/web/server-side/command-injection/cours.md"
+              - "File Inclusion": "01-vulnerabilites/web/server-side/file-inclusion/cours.md"
+              - "File Upload":
+                  - "Cours": "01-vulnerabilites/web/server-side/file-upload/cours.md"
+                  - "Variantes":
+                      - "Alternative Extensions Bypass": "01-vulnerabilites/web/server-side/file-upload/variantes/alternative-extensions-bypass.md"
+              - "Information Disclosure": "01-vulnerabilites/web/server-side/information-disclosure/cours.md"
+              - "Path Traversal": "01-vulnerabilites/web/server-side/path-traversal/cours.md"
+              - "Race Conditions": "01-vulnerabilites/web/server-side/race-conditions/cours.md"
+              - "SQL Injection":
+                  - "Cours": "01-vulnerabilites/web/server-side/sqli/cours.md"
+                  - "CheatSheet": "01-vulnerabilites/web/server-side/sqli/cheatsheet.md"
+              - "SSRF": "01-vulnerabilites/web/server-side/ssrf/cours.md"
       - "Réseau":
-          - "Vue d’ensemble": "01-vulnerabilites/reseau/index.md"
-          - "SSL Stripping":
-              - "Vue d’ensemble": "01-vulnerabilites/reseau/ssl-stripping/index.md"
-              - "Cours": "01-vulnerabilites/reseau/ssl-stripping/cours.md"
-              - "Exploitation": "01-vulnerabilites/reseau/ssl-stripping/exploitation.md"
-              - "CheatSheet": "01-vulnerabilites/reseau/ssl-stripping/cheatsheet.md"
-              - "Révision": "01-vulnerabilites/reseau/ssl-stripping/revision.md"
-              - "Labs associés": "01-vulnerabilites/reseau/ssl-stripping/labs.md"
-      - "Systèmes": "01-vulnerabilites/systemes/index.md"
+          - "SSL Stripping": "01-vulnerabilites/reseau/ssl-stripping/cours.md"
       - "CVE":
-          - "Index": "01-vulnerabilites/cve/index.md"
-          - "CVE-2024-21413":
-              - "Vue d’ensemble": "01-vulnerabilites/cve/cve-2024-21413/index.md"
-              - "Référence existante": "01-vulnerabilites/cve/cve-2024-21413/reference.md"
-              - "Cours": "01-vulnerabilites/cve/cve-2024-21413/cours.md"
-              - "Exploitation": "01-vulnerabilites/cve/cve-2024-21413/exploitation.md"
-              - "CheatSheet": "01-vulnerabilites/cve/cve-2024-21413/cheatsheet.md"
-              - "Révision": "01-vulnerabilites/cve/cve-2024-21413/revision.md"
-              - "Labs associés": "01-vulnerabilites/cve/cve-2024-21413/labs.md"
+          - "CVE-2024-21413": "01-vulnerabilites/cve/cve-2024-21413/reference.md"
+
   - "Fondamentaux":
-      - "Vue d’ensemble": "02-fondamentaux/index.md"
       - "Linux":
-          - "Vue d’ensemble": "02-fondamentaux/linux/index.md"
+          - "Vue d’ensemble": "02-fondamentaux/linux/overview-original.md"
           - "Administration":
-              - "Index": "02-fondamentaux/linux/administration/index.md"
               - "Bzip2": "02-fondamentaux/linux/administration/bzip2.md"
               - "Df": "02-fondamentaux/linux/administration/df.md"
               - "Du": "02-fondamentaux/linux/administration/du.md"
@@ -205,7 +109,6 @@ nav:
               - "Tar": "02-fondamentaux/linux/administration/tar.md"
               - "Zip Unzip": "02-fondamentaux/linux/administration/zip-unzip.md"
           - "CLI texte":
-              - "Index": "02-fondamentaux/linux/cli-texte/index.md"
               - "Alias": "02-fondamentaux/linux/cli-texte/alias.md"
               - "Awk": "02-fondamentaux/linux/cli-texte/awk.md"
               - "Base64": "02-fondamentaux/linux/cli-texte/base64.md"
@@ -221,23 +124,29 @@ nav:
               - "Join": "02-fondamentaux/linux/cli-texte/join.md"
               - "Less": "02-fondamentaux/linux/cli-texte/less.md"
               - "Nl": "02-fondamentaux/linux/cli-texte/nl.md"
-              - "One Liners Boucles": "02-fondamentaux/linux/cli-texte/one-liners-boucles.md"
+              - "One-liners et boucles": "02-fondamentaux/linux/cli-texte/one-liners-boucles.md"
               - "Paste": "02-fondamentaux/linux/cli-texte/paste.md"
               - "Sed": "02-fondamentaux/linux/cli-texte/sed.md"
               - "Seq": "02-fondamentaux/linux/cli-texte/seq.md"
               - "Sort": "02-fondamentaux/linux/cli-texte/sort.md"
               - "Split": "02-fondamentaux/linux/cli-texte/split.md"
-              - "Substitutions Expansions": "02-fondamentaux/linux/cli-texte/substitutions-expansions.md"
+              - "Substitutions et expansions": "02-fondamentaux/linux/cli-texte/substitutions-expansions.md"
               - "Tail": "02-fondamentaux/linux/cli-texte/tail.md"
               - "Tee": "02-fondamentaux/linux/cli-texte/tee.md"
               - "Tr": "02-fondamentaux/linux/cli-texte/tr.md"
               - "Uniq": "02-fondamentaux/linux/cli-texte/uniq.md"
-              - "Variables Environnement": "02-fondamentaux/linux/cli-texte/variables-environnement.md"
+              - "Variables d’environnement": "02-fondamentaux/linux/cli-texte/variables-environnement.md"
               - "Vim": "02-fondamentaux/linux/cli-texte/vim.md"
               - "Wc": "02-fondamentaux/linux/cli-texte/wc.md"
               - "Xxd": "02-fondamentaux/linux/cli-texte/xxd.md"
+          - "Cours Linux":
+              - "Bash Scripting": "02-fondamentaux/linux/cours/bash-scripting.md"
+              - "Fichiers et dossiers": "02-fondamentaux/linux/cours/fichiers-et-dossiers.md"
+              - "Gestion paquets et logs": "02-fondamentaux/linux/cours/gestion-paquets-log.md"
+              - "Shell et environnement": "02-fondamentaux/linux/cours/shell-et-environnement.md"
+              - "Systemd et services": "02-fondamentaux/linux/cours/systemd-et-services.md"
+              - "Disque et démarrage": "02-fondamentaux/linux/cours/systeme-disk-boot.md"
           - "Permissions et processus":
-              - "Index": "02-fondamentaux/linux/permissions-processus/index.md"
               - "Chmod": "02-fondamentaux/linux/permissions-processus/chmod.md"
               - "Chown": "02-fondamentaux/linux/permissions-processus/chown.md"
               - "Crontab": "02-fondamentaux/linux/permissions-processus/crontab.md"
@@ -255,19 +164,11 @@ nav:
               - "Umask": "02-fondamentaux/linux/permissions-processus/umask.md"
               - "Who": "02-fondamentaux/linux/permissions-processus/who.md"
               - "Whoami": "02-fondamentaux/linux/permissions-processus/whoami.md"
-          - "Cours Linux":
-              - "Index": "02-fondamentaux/linux/cours/index.md"
-              - "Bash Scripting": "02-fondamentaux/linux/cours/bash-scripting.md"
-              - "Fichiers Et Dossiers": "02-fondamentaux/linux/cours/fichiers-et-dossiers.md"
-              - "Gestion Paquets Log": "02-fondamentaux/linux/cours/gestion-paquets-log.md"
-              - "Shell Et Environnement": "02-fondamentaux/linux/cours/shell-et-environnement.md"
-              - "Systemd Et Services": "02-fondamentaux/linux/cours/systemd-et-services.md"
-              - "Systeme Disk Boot": "02-fondamentaux/linux/cours/systeme-disk-boot.md"
+
       - "Réseau":
-          - "Vue d’ensemble": "02-fondamentaux/reseau/index.md"
+          - "Vue d’ensemble": "02-fondamentaux/reseau/overview-original.md"
           - "CLI réseau":
-              - "Index": "02-fondamentaux/reseau/cli-reseau/index.md"
-              - "Cles Ssh": "02-fondamentaux/reseau/cli-reseau/cles-ssh.md"
+              - "Clés SSH": "02-fondamentaux/reseau/cli-reseau/cles-ssh.md"
               - "Curl": "02-fondamentaux/reseau/cli-reseau/curl.md"
               - "Dig": "02-fondamentaux/reseau/cli-reseau/dig.md"
               - "Host": "02-fondamentaux/reseau/cli-reseau/host.md"
@@ -286,110 +187,81 @@ nav:
               - "Wget": "02-fondamentaux/reseau/cli-reseau/wget.md"
               - "Whois Rdap": "02-fondamentaux/reseau/cli-reseau/whois-rdap.md"
           - "Cours réseau":
-              - "Index": "02-fondamentaux/reseau/cours/index.md"
-              - "Reseau Bases Config": "02-fondamentaux/reseau/cours/reseau-bases-config.md"
-              - "Routage Subnetting": "02-fondamentaux/reseau/cours/routage-subnetting.md"
+              - "Bases et configuration réseau": "02-fondamentaux/reseau/cours/reseau-bases-config.md"
+              - "Routage et subnetting": "02-fondamentaux/reseau/cours/routage-subnetting.md"
           - "Protocoles":
-              - "Index": "02-fondamentaux/reseau/protocoles/index.md"
               - "Arp": "02-fondamentaux/reseau/protocoles/arp.md"
               - "Dns": "02-fondamentaux/reseau/protocoles/dns.md"
               - "Ftp Ftps Sftp": "02-fondamentaux/reseau/protocoles/ftp-ftps-sftp.md"
               - "Http Https": "02-fondamentaux/reseau/protocoles/http-https.md"
               - "Imap Imaps": "02-fondamentaux/reseau/protocoles/imap-imaps.md"
               - "Nfs Smb": "02-fondamentaux/reseau/protocoles/nfs-smb.md"
-              - "Pop3 Pop3S": "02-fondamentaux/reseau/protocoles/pop3-pop3s.md"
+              - "Pop3 Pop3s": "02-fondamentaux/reseau/protocoles/pop3-pop3s.md"
               - "Smtp Smtps": "02-fondamentaux/reseau/protocoles/smtp-smtps.md"
               - "Ssl Tls": "02-fondamentaux/reseau/protocoles/ssl-tls.md"
               - "Telnet": "02-fondamentaux/reseau/protocoles/telnet.md"
       - "Windows":
-          - "Vue d’ensemble": "02-fondamentaux/windows/index.md"
-          - "Cmd Windows": "02-fondamentaux/windows/cmd-windows.md"
-          - "Powershell Basics": "02-fondamentaux/windows/powershell-basics.md"
+          - "Vue d’ensemble": "02-fondamentaux/windows/overview-original.md"
+          - "CMD Windows": "02-fondamentaux/windows/cmd-windows.md"
+          - "PowerShell": "02-fondamentaux/windows/powershell-basics.md"
+
   - "Outils":
-      - "Vue d’ensemble": "03-outils/index.md"
-      - "reconnaissance":
-          - "Index": "03-outils/reconnaissance/index.md"
+      - "Reconnaissance":
           - "Gobuster": "03-outils/reconnaissance/gobuster.md"
           - "Nmap": "03-outils/reconnaissance/nmap.md"
-      - "exploitation":
-          - "Index": "03-outils/exploitation/index.md"
+      - "Exploitation":
           - "Burp Suite": "03-outils/exploitation/burp-suite.md"
           - "Ffuf": "03-outils/exploitation/ffuf.md"
           - "Hydra": "03-outils/exploitation/hydra.md"
-          - "John The Ripper": "03-outils/exploitation/john-the-ripper.md"
+          - "John the Ripper": "03-outils/exploitation/john-the-ripper.md"
           - "Metasploit Framework": "03-outils/exploitation/metasploit-framework.md"
           - "Mimikatz Kiwi": "03-outils/exploitation/mimikatz-kiwi.md"
           - "Sqlmap": "03-outils/exploitation/sqlmap.md"
-      - "analyse-reseau":
-          - "Index": "03-outils/analyse-reseau/index.md"
+      - "Analyse réseau":
           - "Wireshark": "03-outils/analyse-reseau/wireshark.md"
-      - "post-exploitation":
-          - "Index": "03-outils/post-exploitation/index.md"
+      - "Post-exploitation":
           - "Meterpreter": "03-outils/post-exploitation/meterpreter.md"
           - "Msfvenom": "03-outils/post-exploitation/msfvenom.md"
           - "Netcat": "03-outils/post-exploitation/netcat.md"
-          - "Reverse Bind Shells": "03-outils/post-exploitation/reverse-bind-shells.md"
-          - "Shell Listeners": "03-outils/post-exploitation/shell-listeners.md"
+          - "Reverse et bind shells": "03-outils/post-exploitation/reverse-bind-shells.md"
+          - "Shell listeners": "03-outils/post-exploitation/shell-listeners.md"
+
   - "Méthodes et techniques":
-      - "Vue d’ensemble": "04-methodes/index.md"
-      - "Reconnaissance":
-          - "Index": "04-methodes/reconnaissance/index.md"
-          - "Reconnaissance active et passive": "04-methodes/reconnaissance/recon-active-passive.md"
-      - "Exploitation":
-          - "Index": "04-methodes/exploitation/index.md"
-          - "Méthodologie d’attaques par mot de passe": "04-methodes/exploitation/password-attacks-methodology.md"
-      - "Réseau":
-          - "Index": "04-methodes/reseau/index.md"
-          - "Sniffing, MITM et techniques réseau": "04-methodes/reseau/network-sniffing-mitm-techniques.md"
-      - "Système":
-          - "Index": "04-methodes/systeme/index.md"
-          - "Shell escape": "04-methodes/systeme/shell-escape.md"
-      - "Web":
-          - "Index": "04-methodes/web/index.md"
-          - "Web shells": "04-methodes/web/web-shells.md"
+      - "Reconnaissance": "04-methodes/reconnaissance/recon-active-passive.md"
+      - "Exploitation": "04-methodes/exploitation/password-attacks-methodology.md"
+      - "Réseau": "04-methodes/reseau/network-sniffing-mitm-techniques.md"
+      - "Système": "04-methodes/systeme/shell-escape.md"
+      - "Web": "04-methodes/web/web-shells.md"
+
   - "Cours transversaux":
-      - "Vue d’ensemble": "05-cours/index.md"
       - "Blue Team":
-          - "Index": "05-cours/blue-team/index.md"
           - "Digital Forensics Acquisition": "05-cours/blue-team/digital-forensics-acquisition.md"
-          - "Iaaa Model": "05-cours/blue-team/iaaa-model.md"
+          - "IAAA Model": "05-cours/blue-team/iaaa-model.md"
           - "Incident Response Frameworks": "05-cours/blue-team/incident-response-frameworks.md"
           - "Log Fundamentals": "05-cours/blue-team/log-fundamentals.md"
-          - "Siem Fundamentals Rules": "05-cours/blue-team/siem-fundamentals-rules.md"
-          - "Soc Fundamentals": "05-cours/blue-team/soc-fundamentals.md"
-          - "Windows Event Logs Cli": "05-cours/blue-team/windows-event-logs-cli.md"
+          - "SIEM Fundamentals Rules": "05-cours/blue-team/siem-fundamentals-rules.md"
+          - "SOC Fundamentals": "05-cours/blue-team/soc-fundamentals.md"
+          - "Windows Event Logs CLI": "05-cours/blue-team/windows-event-logs-cli.md"
           - "Windows Forensics": "05-cours/blue-team/windows-forensics.md"
       - "Red Team":
-          - "Index": "05-cours/red-team/index.md"
           - "OWASP Top 10": "05-cours/red-team/owasp-top10-cheatsheet.md"
-          - "Web transverse":
-              - "Index": "05-cours/red-team/web/index.md"
-              - "Tests d’API": "05-cours/red-team/web/api-testing.md"
-              - "Notions sur les vulnérabilités d’authentification": "05-cours/red-team/web/authentification-vulnerabilites.md"
-  - "Writeups":
-      - "Vue d’ensemble": "06-writeups/index.md"
-      - "Hack The Box":
-          - "Index": "06-writeups/htb/index.md"
-          - "Ancien index conservé": "06-writeups/htb/overview-original.md"
-      - "OverTheWire":
-          - "Index": "06-writeups/otw/index.md"
-          - "Ancien index conservé": "06-writeups/otw/overview-original.md"
-      - "Root-Me":
-          - "Index": "06-writeups/rootme/index.md"
-          - "Ancien index conservé": "06-writeups/rootme/overview-original.md"
-      - "TryHackMe":
-          - "Index": "06-writeups/thm/index.md"
-          - "Ancien index conservé": "06-writeups/thm/overview-original.md"
-  - "Pratique et révision":
-      - "Vue d’ensemble": "07-pratique/index.md"
-      - "Journal de labs":
-          - "Index": "07-pratique/journal/index.md"
-          - "Modèle de compte rendu": "07-pratique/journal/template.md"
-      - "Flashcards":
-          - "Index": "07-pratique/flashcards/index.md"
           - "Web":
-              - "Index": "07-pratique/flashcards/web/index.md"
+              - "Vue d’ensemble": "05-cours/red-team/web/overview-original.md"
+              - "Tests d’API": "05-cours/red-team/web/api-testing.md"
+              - "Vulnérabilités d’authentification": "05-cours/red-team/web/authentification-vulnerabilites.md"
+
+  - "Writeups":
+      - "Hack The Box": "06-writeups/htb/overview-original.md"
+      - "OverTheWire": "06-writeups/otw/overview-original.md"
+      - "Root-Me": "06-writeups/rootme/overview-original.md"
+      - "TryHackMe": "06-writeups/thm/overview-original.md"
+
+  - "Pratique et révision":
+      - "Journal de labs":
+          - "Modèle de compte rendu": "journal-lab-template.md"
+      - "Flashcards":
+          - "Web":
               - "Contrôle d’accès": "07-pratique/flashcards/web/access-control.md"
               - "SQL Injection": "07-pratique/flashcards/web/sqli.md"
-      - "Rétrospectives": "07-pratique/retrospectives/index.md"
+
   - "Tags": "tags.md"
