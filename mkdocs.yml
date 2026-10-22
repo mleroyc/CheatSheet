@@ -76,13 +76,16 @@ nav:
               - "Authentication Failures": "01-vulnerabilites/web/auth-controle-acces/authentication-failures/cours.md"
               - "Broken Access Control": "01-vulnerabilites/web/auth-controle-acces/broken-access-control/cours.md"
               - "Insecure Password Reset": "01-vulnerabilites/web/auth-controle-acces/insecure-password-reset/cours.md"
-              - "Vulnérabilités d’authentification": "01-vulnerabilites/web/auth-controle-acces/authentification-vulnerabilites.md"
 
           - "Logique métier":
               - "Business Logic Flaws": "01-vulnerabilites/web/logique-metier/business-logic-flaws/cours.md"
 
           - "Server-side":
-              - "Tests d’API": "01-vulnerabilites/web/server-side/api/cours.md"
+              - "Tests d’API": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/api/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/api/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/api/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/api/revision.md"
               - "Command Injection": "01-vulnerabilites/web/server-side/command-injection/cours.md"
               - "File Inclusion": "01-vulnerabilites/web/server-side/file-inclusion/cours.md"
               - "File Upload":
@@ -99,6 +102,7 @@ nav:
               - "SSRF": "01-vulnerabilites/web/server-side/ssrf/cours.md"
               - "Cache Deception": "01-vulnerabilites/web/server-side/web-cache-deception/cours.md"
               - "XXE": "01-vulnerabilites/web/server-side/xxe/cours.md"
+              - "Vulnérabilités d’authentification": "01-vulnerabilites/web/server-side/authentication/cours.md"
 
       - "Réseau":
           - "SSL Stripping": "01-vulnerabilites/reseau/ssl-stripping/cours.md"
