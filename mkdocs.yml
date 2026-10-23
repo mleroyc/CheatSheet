@@ -68,41 +68,71 @@ plugins:
       minify_html: true
 
 nav:
-  - "Accueil": "index.md"
+  - "Accueil": 
+      - "Protocoles" : "index.md"
+      - "Glossaire" : "glossaire.md"
 
   - "Vulnérabilités et attaques":
       - "Web":
           - "Authentification et contrôle d’accès":
-              - "Authentication Failures": "01-vulnerabilites/web/auth-controle-acces/authentication-failures/cours.md"
-              - "Broken Access Control": "01-vulnerabilites/web/auth-controle-acces/broken-access-control/cours.md"
-              - "Insecure Password Reset": "01-vulnerabilites/web/auth-controle-acces/insecure-password-reset/cours.md"
+              - "Authentication Failures": 
+                  - "Cours" : "01-vulnerabilites/web/auth-controle-acces/authentication-failures/cours.md"
+              - "Broken Access Control": 
+                  - "Cours" : "01-vulnerabilites/web/auth-controle-acces/broken-access-control/cours.md"
+              - "Insecure Password Reset": 
+                  - "Cours" : "01-vulnerabilites/web/auth-controle-acces/insecure-password-reset/cours.md"
 
           - "Logique métier":
-              - "Business Logic Flaws": "01-vulnerabilites/web/logique-metier/business-logic-flaws/cours.md"
+              - "Business Logic Flaws": 
+                  - "Cours" : "01-vulnerabilites/web/logique-metier/business-logic-flaws/cours.md"
 
           - "Server-side":
-              - "Tests d’API": 
+              - "Server Side Parameter Pollution": 
                   - "Cours" : "01-vulnerabilites/web/server-side/api/cours.md"
                   - "Exploitation" : "01-vulnerabilites/web/server-side/api/exploitation.md"
                   - "CheatSheet" : "01-vulnerabilites/web/server-side/api/cheatsheet.md"
                   - "Revision" : "01-vulnerabilites/web/server-side/api/revision.md"
-              - "Command Injection": "01-vulnerabilites/web/server-side/command-injection/cours.md"
-              - "File Inclusion": "01-vulnerabilites/web/server-side/file-inclusion/cours.md"
+              - "Command Injection": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/command-injection/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/command-injection/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/command-injection/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/command-injection/revision.md"
+              - "File Inclusion": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/file-inclusion/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/file-inclusion/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/file-inclusion/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/file-inclusion/revision.md"
               - "File Upload":
                   - "Cours": "01-vulnerabilites/web/server-side/file-upload/cours.md"
+                  - "Exploitation": "01-vulnerabilites/web/server-side/file-upload/exploitation.md"
+                  - "CheatSheet": "01-vulnerabilites/web/server-side/file-upload/cheatsheet.md"
+                  - "Revision": "01-vulnerabilites/web/server-side/file-upload/revision.md"
                   - "Variantes":
                       - "Alternative Extensions Bypass": "01-vulnerabilites/web/server-side/file-upload/variantes/alternative-extensions-bypass.md"
-              - "Information Disclosure": "01-vulnerabilites/web/server-side/information-disclosure/cours.md"
-              - "Path Traversal": "01-vulnerabilites/web/server-side/path-traversal/cours.md"
-              - "Race Conditions": "01-vulnerabilites/web/server-side/race-conditions/cours.md"
+              - "Information Disclosure": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/information-disclosure/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/information-disclosure/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/information-disclosure/cheatsheet.md"
+              - "Path Traversal": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/path-traversal/cours.md"
+              - "Race Conditions": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/race-conditions/cours.md"
               - "SQL Injection":
                   - "Cours": "01-vulnerabilites/web/server-side/sqli/cours.md"
                   - "CheatSheet": "01-vulnerabilites/web/server-side/sqli/cheatsheet.md"
-              - "No-SQL Injection": "01-vulnerabilites/web/server-side/no-sqli/cours.md"
-              - "SSRF": "01-vulnerabilites/web/server-side/ssrf/cours.md"
-              - "Cache Deception": "01-vulnerabilites/web/server-side/web-cache-deception/cours.md"
-              - "XXE": "01-vulnerabilites/web/server-side/xxe/cours.md"
-              - "Vulnérabilités d’authentification": "01-vulnerabilites/web/server-side/authentication/cours.md"
+              - "No-SQL Injection": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/no-sqli/cours.md"
+              - "SSRF": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/ssrf/cours.md"
+              - "Cache Deception": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/web-cache-deception/cours.md"
+              - "XXE": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/xxe/cours.md"
+              - "Vulnérabilités d’authentification": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/authentication/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/authentication/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/authentication/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/authentication/revision.md"
 
       - "Réseau":
           - "SSL Stripping": "01-vulnerabilites/reseau/ssl-stripping/cours.md"
