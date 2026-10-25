@@ -87,6 +87,11 @@ nav:
                   - "Cours" : "01-vulnerabilites/web/logique-metier/business-logic-flaws/cours.md"
 
           - "Server-side":
+              - "Vulnérabilités d’authentification": 
+                  - "Cours" : "01-vulnerabilites/web/server-side/authentication/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/authentication/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/authentication/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/authentication/revision.md"
               - "Server Side Parameter Pollution": 
                   - "Cours" : "01-vulnerabilites/web/server-side/api/cours.md"
                   - "Exploitation" : "01-vulnerabilites/web/server-side/api/exploitation.md"
@@ -113,26 +118,42 @@ nav:
                   - "Cours" : "01-vulnerabilites/web/server-side/information-disclosure/cours.md"
                   - "Exploitation" : "01-vulnerabilites/web/server-side/information-disclosure/exploitation.md"
                   - "CheatSheet" : "01-vulnerabilites/web/server-side/information-disclosure/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/information-disclosure/revision.md"
               - "Path Traversal": 
                   - "Cours" : "01-vulnerabilites/web/server-side/path-traversal/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/path-traversal/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/path-traversal/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/path-traversal/revision.md"
               - "Race Conditions": 
                   - "Cours" : "01-vulnerabilites/web/server-side/race-conditions/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/race-conditions/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/race-conditions/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/race-conditions/revision.md"
               - "SQL Injection":
                   - "Cours": "01-vulnerabilites/web/server-side/sqli/cours.md"
+                  - "Exploitation": "01-vulnerabilites/web/server-side/sqli/exploitation.md"
                   - "CheatSheet": "01-vulnerabilites/web/server-side/sqli/cheatsheet.md"
+                  - "Revision": "01-vulnerabilites/web/server-side/sqli/revision.md"
               - "No-SQL Injection": 
                   - "Cours" : "01-vulnerabilites/web/server-side/no-sqli/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/no-sqli/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/no-sqli/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/no-sqli/revision.md"
               - "SSRF": 
                   - "Cours" : "01-vulnerabilites/web/server-side/ssrf/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/ssrf/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/ssrf/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/ssrf/cheatsheet.md"
               - "Cache Deception": 
                   - "Cours" : "01-vulnerabilites/web/server-side/web-cache-deception/cours.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/web-cache-deception/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/web-cache-deception/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/web-cache-deception/revision.md"
               - "XXE": 
                   - "Cours" : "01-vulnerabilites/web/server-side/xxe/cours.md"
-              - "Vulnérabilités d’authentification": 
-                  - "Cours" : "01-vulnerabilites/web/server-side/authentication/cours.md"
-                  - "Exploitation" : "01-vulnerabilites/web/server-side/authentication/exploitation.md"
-                  - "CheatSheet" : "01-vulnerabilites/web/server-side/authentication/cheatsheet.md"
-                  - "Revision" : "01-vulnerabilites/web/server-side/authentication/revision.md"
+                  - "Exploitation" : "01-vulnerabilites/web/server-side/xxe/exploitation.md"
+                  - "CheatSheet" : "01-vulnerabilites/web/server-side/xxe/cheatsheet.md"
+                  - "Revision" : "01-vulnerabilites/web/server-side/xxe/revision.md"
 
       - "Réseau":
           - "SSL Stripping": "01-vulnerabilites/reseau/ssl-stripping/cours.md"
